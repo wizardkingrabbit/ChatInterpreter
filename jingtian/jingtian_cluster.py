@@ -29,15 +29,19 @@ while(True):
 
 # the linear clustering process
 # step 1: tools
+print("a number between 0.85 and 1 is recommended")
+user_input_ratio = float(input("ratio of min space between two chats for them to be considered in the same cluster/ average space: "))
+print("the unit is minute")
+user_input_expected_cluster = float(input("how often you expect a cluster to appear ON AVERAGE: "))
 print("the clustring process starts")
 timestamp_array = numpy.zeros(chats_length)
 counter = 0
 while (counter < chats_length):
     timestamp_array[counter] = jsondata["comments"][counter]["content_offset_seconds"]
     counter += 1
-expected_cluster = stream_length / 60 # I personally expect that there should be one cluster every minute on average
-space_thresh = average_space # max space that two chats in the same cluster can have
-chats_thresh = chats_length / expected_cluster # minimal number of chats that required to form a cluster
+expected_cluster = stream_length / user_input_expected_cluster # I personally expect that there should be one cluster every minute on average
+space_thresh = average_space * user_input_ratio                # max space that two chats in the same cluster can have
+chats_thresh = chats_length / expected_cluster                 # minimal number of chats that required to form a cluster
 cluster_array = numpy.zeros([int(expected_cluster), 6])
 # 0 --> starting chat of the cluster
 # 1 --> ending chat of the cluster
