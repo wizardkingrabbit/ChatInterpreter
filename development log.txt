@@ -1,0 +1,2 @@
+Jan/31/2021: 
+Duo Chen: first version of Clipper module to automate clipping of chat json files. 

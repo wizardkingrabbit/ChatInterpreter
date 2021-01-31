@@ -33,7 +33,7 @@ class clip_it():
 
 
 
-def Clip_from_Chat(speed, chats, time_points, min_len=5): 
+def Clip_from_Chat(speed, chats, time_points, min_len=5, threshold = 100): 
     ''' takes chat speed and string numpy array, turn into a list of clip class objects 
         it will not clip if clip chat is less then 5 in length'''
     assert len(speed) == len(chats)
@@ -41,11 +41,12 @@ def Clip_from_Chat(speed, chats, time_points, min_len=5):
     N = len(speed) 
     i = 0
     avg_speed = speed.mean()
+    speed_threshold = (float(threshold)/100.0) * float(avg_speed)
     clips = list()
     while(i<N):
         if speed[i] >= avg_speed: 
             clip = clip_it(time_points[i])
-            while(i<N and speed[i] >= avg_speed): 
+            while(i<N and speed[i] >= speed_threshold): 
                 clip.chats.append(chats[i]) 
                 i+=1 
             if len(clip) >= min_len:
