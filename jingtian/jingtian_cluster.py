@@ -31,7 +31,8 @@ while(True):
 # step 1: tools
 print("a number between 0.85 and 1 is recommended")
 user_input_ratio = float(input("ratio of min space between two chats for them to be considered in the same cluster/ average space: "))
-print("the unit is minute")
+print("the unit is second. 60 is the recommended input, meaning you expect the cluster to appear every minute")
+print("But notice that you are inputing the THRESHHOLD, the result clustering would be MUCH LESS frquent than this expected number")
 user_input_expected_cluster = float(input("how often you expect a cluster to appear ON AVERAGE: "))
 print("the clustring process starts")
 timestamp_array = numpy.zeros(chats_length)
