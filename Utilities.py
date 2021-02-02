@@ -23,13 +23,51 @@ def Twitch_Comment_to_data(comments:dict, chat_window=10):
 
 
 class clip_it(): 
+    CLIP_LABELS = ['unlabeled', 'special topic', 'suprise', 'astonishment', 'shock']
+    
     def __init__(self, start:float):
         self.start_time = start
         self.chats = list() 
         self.end_time = -1
+        self.label = self.CLIP_LABELS[0] 
 
     def __len__(self): 
-        return len(self.chats)  
+        return len(self.chats)
+    
+    def duration(self) -> float: 
+        ''' returns the duration is the clip in floats unit is seconds ''' 
+        assert self.end_time > 0 and self.start_time > 0, 'clip not valid, negative value in times'
+        assert self.end_time >= self.start_time, 'clip not valid, end_time before start_time'
+        return self.end_time - self.start_time 
+    
+    def set_label(self, n:int): 
+        ''' sets the label for this clip, entered value must be within label index'''
+        
+        assert n <= len(self.CLIP_LABELS), 'entered invalid value in clip labeling' 
+        
+        self.label = self.CLIP_LABELS[n] 
+        
+    def get_label(self) -> str: 
+        ''' returns the label string for this clip''' 
+        return self.label 
+    
+    def label_info(self) -> list: 
+        ''' return the possible label list for the clips''' 
+        return self.CLIP_LABELS 
+    
+    def print_label_info(self): 
+        ''' print out possible label info''' 
+        print('==========================================================')
+        for i,x in enumerate(self.CLIP_LABELS): 
+            print(f'label index {i} is {x}') 
+            
+        print('to access this list os string, use method .label_info()')
+        print('===========================================================') 
+        
+        
+
+    
+      
 
 
 
