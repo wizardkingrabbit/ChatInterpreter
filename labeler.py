@@ -57,6 +57,7 @@ if __name__ == '__main__':
         while(True): 
             print(short_line)
             print(f'Available labels are {clip.label_info_to_str()}')
+            print(f'current label of the clip is [{clip.get_label()}]')
             ans = input('Enter a label index in int: ') 
             try: 
                 ans = int(ans) 
