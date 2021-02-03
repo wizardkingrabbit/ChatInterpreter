@@ -26,6 +26,45 @@ def Twitch_Comment_to_data(comments:dict, chat_window=10):
     speed = 1/speed
     return (speed,chats,x,video_id)
 
+def prompt_for_int(message:str, min_v=None, max_v=None) -> int: 
+    ''' prompt for integer input with passed message and do all error checking,
+        also check for min and max value range, they are inclusive'''
+    while(True): 
+        ans = input(message) 
+        try: 
+            ans = int(ans) 
+            if min_v!=None: 
+                assert ans>=min 
+            if max_v!=None: 
+                assert ans<=max_v
+            break
+        except: 
+            print('invalid value entered, try again') 
+            continue 
+        
+    return ans 
+
+
+def prompt_for_float(message:str, min_v=None, max_v=None) -> float: 
+    ''' prompt for float input with passed message and do all error checking,
+        also check for min and max value range, they are inclusive'''
+    while(True): 
+        ans = input(message) 
+        try: 
+            ans = float(ans) 
+            if min_v!=None: 
+                assert ans>=min 
+            if max_v!=None: 
+                assert ans<=max_v
+            break
+        except: 
+            print('invalid value entered, try again') 
+            continue 
+        
+    return ans 
+
+
+
 
 def time_to_str(time:float) -> str: 
     ''' return a formated str of time in h:m:s'''
@@ -43,7 +82,7 @@ class clip_it():
         self.start_time = start
         self.chats = list() 
         self.end_time = -1
-        self.label = self.CLIP_LABELS[0] 
+        self.label = 0
         self.span_duration = span_duration
         self.video_id = video_id
 
@@ -80,9 +119,9 @@ class clip_it():
     def set_label(self, n:int): 
         ''' sets the label for this clip, entered value must be within label index'''
         
-        assert n <= len(self.CLIP_LABELS), 'entered invalid value in clip labeling' 
+        assert n < len(self.CLIP_LABELS), 'entered invalid value in clip labeling' 
         
-        self.label = self.CLIP_LABELS[n] 
+        self.label = n
         
         
     def set_span_duration(self, span:float): 
@@ -91,7 +130,7 @@ class clip_it():
         
     def get_label(self) -> str: 
         ''' returns the label string for this clip''' 
-        return self.label 
+        return self.CLIP_LABELS[self.label] 
     
     def label_info(self) -> list: 
         ''' return the possible label list for the clips''' 
