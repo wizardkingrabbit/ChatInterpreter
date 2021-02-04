@@ -88,6 +88,8 @@ class clip_it():
     positive_labels = {1,2,3}
     negative_labels = {4,5,6}
     
+    # IMPORTANT: when you add a class, make sure to add one the same way as indexing and put that number in binary class as well
+    
     def __init__(self, start:float, video_id:str, span_duration=5.0): 
         self.start_time = start
         self.chats = list() 
