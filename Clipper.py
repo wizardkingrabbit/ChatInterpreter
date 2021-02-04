@@ -25,16 +25,8 @@ if __name__ == '__main__':
     min_clip_len = 10
     chat_speed_threshold = 100 
     while(True): 
-        answer = input('Do you want ot use default values? (1 for yes, -1 for no, 0 for more info): ') 
-        try: 
-            answer = int(answer) 
-        except: 
-            print('invalid value entered, try again')
-            continue 
-        if answer not in {0,1,-1}: 
-            print('invalid value entered, try again')
-            continue 
-        elif answer == 0: 
+        answer = prompt_for_int('Do you want ot use default values? (1 for yes, -1 for no, 0 for more info): ', min_v=-1, max_v=1) 
+        if answer == 0: 
             print(long_line)
             print(f'value for chat window is {chat_window}')
             print(f'the value for min_clip_len is {min_clip_len}')
@@ -43,18 +35,10 @@ if __name__ == '__main__':
             continue
         elif answer == 1: 
             break 
-        elif answer == -1:
+        elif answer == -1: 
             while(True): 
-                chat_window_answer = input('Enter a chat window as an int (0 for more info): ') 
-                try: 
-                    chat_window_answer = int(chat_window_answer) 
-                except: 
-                    print('invalid value entered, try again')
-                    continue 
-                if type(chat_window_answer) != int or chat_window_answer < 0: 
-                    print('invalid value entered, try again') 
-                    continue 
-                elif chat_window_answer == 0: 
+                chat_window_answer = prompt_for_int('Enter a chat window as an int (0 for more info): ', min_v=0)
+                if chat_window_answer == 0: 
                     print(long_line)
                     print('chat window means how many chat messages we measure chat speed') 
                     print('for example, window os 1 is that we measure chat speed at every chat message') 
@@ -66,18 +50,10 @@ if __name__ == '__main__':
                 elif chat_window_answer > 0: 
                     chat_window = chat_window_answer
                     break 
-                
-            while(True): 
-                clip_len_answer = input('Enter minimum clip length as an int (0 for more info): ') 
-                try: 
-                    clip_len_answer = int(clip_len_answer) 
-                except: 
-                    print('invalid value entered, try again')
-                    continue 
-                if clip_len_answer < 0: 
-                    print('invalid value, try again') 
-                    continue 
-                elif clip_len_answer == 0: 
+                    
+            while(True):  
+                clip_len_answer = prompt_for_int('Enter minimum clip length as an int (0 for more info): ',min_v=0) 
+                if clip_len_answer == 0: 
                     print(long_line)
                     print('clip length means how many chat minimum do we need in a clip') 
                     print('for example, if minimum is 10')
@@ -86,20 +62,12 @@ if __name__ == '__main__':
                     print(long_line)
                     continue
                 elif clip_len_answer > 0: 
-                    min_clip_len = clip_len_answer 
+                    min_clip_len = clip_len_answer  
                     break 
-                    
+            
             while(True): 
-                speed_thr_ans = input('Enter chat speed threshold in percent (0 for more info): ') 
-                try: 
-                    speed_thr_ans = int(speed_thr_ans) 
-                except: 
-                    print('invalid value entered, try again')
-                    continue 
-                if speed_thr_ans < 0: 
-                    print('value invalid, try again') 
-                    continue 
-                elif speed_thr_ans == 0: 
+                speed_thr_ans = prompt_for_int('Enter chat speed threshold in percent (0 for more info): ',min_v=0) 
+                if speed_thr_ans == 0: 
                     print(long_line)
                     print('speed threshold means at what chat speed do we start clipping') 
                     print('each vod has its average chat speed, we take a percentage based on that') 
@@ -109,8 +77,9 @@ if __name__ == '__main__':
                     print(long_line)
                     continue 
                 elif speed_thr_ans > 0: 
-                    chat_speed_threshold = speed_thr_ans 
-                    break 
+                    chat_speed_threshold = speed_thr_ans
+                    break   
+                
             break 
         
             
@@ -128,11 +97,18 @@ if __name__ == '__main__':
                 
     while(True): 
         clip_file_name = input('How do you want to name this pickle file? (WITHOUT .pkl): ') 
-        if type(clip_file_name) != str: 
-            print('value invalid, try again') 
-            continue 
-        else: 
+        while(True):
+            ans = input(f'Name is {clip_file_name}, are you sure? (y/n): ') 
+            if not(ans in {'y', 'n'}): 
+                print('invalid value entered, try again') 
+                continue
+            else: 
+                break 
+        if ans=='y': 
             break 
+        elif ans=='n': 
+            continue
+            
         
     if (not os.path.exists('clip_data')) or (not os.path.isdir('clip_data')): 
         os.makedirs('clip_data')

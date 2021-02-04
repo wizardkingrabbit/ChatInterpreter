@@ -34,7 +34,7 @@ def prompt_for_int(message:str, min_v=None, max_v=None) -> int:
         try: 
             ans = int(ans) 
             if min_v!=None: 
-                assert ans>=min 
+                assert ans>=min_v
             if max_v!=None: 
                 assert ans<=max_v
             break
@@ -53,7 +53,7 @@ def prompt_for_float(message:str, min_v=None, max_v=None) -> float:
         try: 
             ans = float(ans) 
             if min_v!=None: 
-                assert ans>=min 
+                assert ans>=min_v
             if max_v!=None: 
                 assert ans<=max_v
             break
@@ -76,7 +76,17 @@ def time_to_str(time:float) -> str:
     return (f'{hours}:{minutes}:{seconds}') 
 
 class clip_it(): 
-    CLIP_LABELS = ['unlabeled', 'special topic', 'amasement', 'AHHH!', 'lol', 'disappointment', 'wait, wat?']
+    
+    available_labels = {0:'unlabeled',
+                        1:'special topic',
+                        2:'amasement',
+                        3:'amusement',
+                        4:'disappointment', 
+                        5:'shock', 
+                        6:'pure confusion'}
+    
+    positive_labels = {1,2,3}
+    negative_labels = {4,5,6}
     
     def __init__(self, start:float, video_id:str, span_duration=5.0): 
         self.start_time = start
@@ -101,7 +111,7 @@ class clip_it():
         ''' make a copy of itself''' 
         to_return = clip_it(start=float(self.start_time), video_id=str(self.video_id), span_duration=float(self.span_duration)) 
         to_return.end_time = float(self.end_time)
-        to_return.label = str(self.label)
+        to_return.label = int(self.label)
         to_return.chats = copy.deepcopy(self.chats) 
         
         return to_return
@@ -119,7 +129,7 @@ class clip_it():
     def set_label(self, n:int): 
         ''' sets the label for this clip, entered value must be within label index'''
         
-        assert n < len(self.CLIP_LABELS), 'entered invalid value in clip labeling' 
+        assert n < len(self.available_labels), 'entered invalid value in clip labeling' 
         
         self.label = n
         
@@ -130,22 +140,36 @@ class clip_it():
         
     def get_label(self) -> str: 
         ''' returns the label string for this clip''' 
-        return self.CLIP_LABELS[self.label] 
+        return self.available_labels[self.label] 
     
-    def label_info(self) -> list: 
-        ''' return the possible label list for the clips''' 
-        return self.CLIP_LABELS 
+    def get_label_binary(self) -> int: 
+        ''' returns clip label in binary classification 
+            1 is positive, -1 is negative, 0 is unlabeled (or something is wrong)
+            typically, we do not want to use unlabeled, but it is up to the model maker''' 
+        if self.label == 0: 
+            return 0 
+        elif self.label in self.positive_labels: 
+            return 1 
+        elif self.label in self.negative_labels: 
+            return -1
+        else: 
+            return 0 
+            
+        
+    def label_info(self) -> dict: 
+        ''' return the possible label dict for the clips''' 
+        return self.available_labels 
     
     
     def label_info_to_str(self) -> str: 
         ''' return lable info as a printable str'''
         to_return = ''
         to_return += os.linesep
-        for i,x in enumerate(self.CLIP_LABELS): 
+        for i,x in self.available_labels.items(): 
             to_return += f'label index {i} is [{x}]'
             to_return += os.linesep
             
-        to_return += f'to access this list os string, use method .label_info(){os.linesep}'
+        to_return += f'to access this dict, use method .label_info(){os.linesep}'
         to_return += short_line
         
         return to_return 

@@ -54,20 +54,14 @@ if __name__ == '__main__':
             print(short_line) 
             print(clip) 
             
-        while(True): 
-            print(short_line)
-            print(f'Available labels are {clip.label_info_to_str()}')
-            print(f'current label of the clip is [{clip.get_label()}]')
-            ans = input('Enter a label index in int: ') 
-            try: 
-                ans = int(ans) 
-                assert ans<len(clip.label_info())
-            except: 
-                print('invalid value entered, try again') 
-                continue 
-            
-            clip.set_label(ans) 
-            break 
+        print(short_line)
+        print(f'Available labels are {clip.label_info_to_str()}')
+        print(f'current label of the clip is [{clip.get_label()}]')
+        print(f'current binary label for the clip is [{clip.get_label_binary()}]')
+        ans = prompt_for_int('Enter a label index in int: ',min_v=0, max_v=len(clip.label_info())-1)  
+        
+        clip.set_label(ans) 
+             
         
         while(True): 
             print(short_line)
@@ -85,28 +79,30 @@ if __name__ == '__main__':
                 break 
             
         if ans == 'y': 
-            while(True): 
-                ans = input('Enter duration in float: ') 
-                try: 
-                    ans = float(ans) 
-                    assert ans>0.0 
-                    break
-                except: 
-                    print('invalid value entered, try again') 
-                    continue 
-                
-                
-            clip.set_span_duration(ans) 
+            span_ans = prompt_for_float('Enter duration in float: ', min_v=0.0)      
+            clip.set_span_duration(span_ans) 
             
         labeled_list.append(clip) 
         
+    while(True): 
+        ans = input('Save file? (y/n): ') 
+        if not(ans in {'y','n'}): 
+            print('invalid value entered, try again') 
+            continue 
+        else: 
+            break 
     
-    new_file_path = file_path[:-4:] 
-    new_file_path += '_labeled' 
-    new_file_path += '.pkl' 
-    
-    with open(new_file_path, 'wb') as f: 
-        pickle.dump(labeled_list, f) 
+    if ans=='y': 
+        new_file_path = file_path[:-4:] 
+        new_file_path += '_labeled' 
+        new_file_path += '.pkl' 
+        
+        with open(new_file_path, 'wb') as f: 
+            pickle.dump(labeled_list, f) 
+            
+        print(f'Saved file as {new_file_path}')
+    else: 
+        print('exiting')
         
         
     exit(0)
