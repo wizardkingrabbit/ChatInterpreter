@@ -1,3 +1,4 @@
+### CREATES A PKL FILE WITH A LIST OF STRINGS (EACH STRING IS A CHAT MESSAGE).
 import numpy as np
 import matplotlib.pyplot as plt
 import json
