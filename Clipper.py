@@ -24,13 +24,14 @@ if __name__ == '__main__':
     chat_window = 10 
     min_clip_len = 10
     chat_speed_threshold = 100 
+    ignore_notices = True 
     while(True): 
         answer = prompt_for_int('Do you want ot use default values? (1 for yes, -1 for no, 0 for more info): ', min_v=-1, max_v=1) 
         if answer == 0: 
             print(long_line)
             print(f'value for chat window is {chat_window}')
             print(f'the value for min_clip_len is {min_clip_len}')
-            print(f'the value for threshold is {chat_speed_threshold}')
+            print(f'the value for threshold is {chat_speed_threshold}') 
             print(long_line)
             continue
         elif answer == 1: 
@@ -79,8 +80,28 @@ if __name__ == '__main__':
                 elif speed_thr_ans > 0: 
                     chat_speed_threshold = speed_thr_ans
                     break   
-                
+            
             break 
+        
+    while(True): 
+        ans = input('Do you want to ignore notice chats? (y/n/i, i for more info): ') 
+        if not(ans in {'y','n','i'}): 
+            print(prompt_err_msg) 
+            continue 
+        elif ans == 'y': 
+            break 
+        elif ans == 'n': 
+            ignore_notices = False 
+            break 
+        else: 
+            print(long_line)
+            print('Typically in twitch chat, every subscription is considered a chat') 
+            print('If someone gift subs to someone, those will maximize chat speed in that interval')
+            print('you can choose to ignore those or take those into account.') 
+            print('Default value is True')
+            print(long_line)
+            continue
+        
         
             
     try: 
@@ -88,13 +109,14 @@ if __name__ == '__main__':
             data = json.load(f) 
             
         comments = data['comments'] 
-        speed, chats, x, video_id = Twitch_Comment_to_data(comments, chat_window) 
+        speed, chats, x, video_id = Twitch_Comment_to_data(comments=comments, chat_window=chat_window, ignore_notices=ignore_notices) 
         clips = Clip_from_Chat(speed, chats=chats, time_points=x, video_id=video_id, min_len=min_clip_len, threshold=chat_speed_threshold) 
     except: 
         print('file format is not correct, exiting')
         exit(0)
                 
-                
+    
+    print(f'Number of clips found is {len(clips)}')
     while(True): 
         clip_file_name = input('How do you want to name this pickle file? (WITHOUT .pkl): ') 
         while(True):

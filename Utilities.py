@@ -6,14 +6,21 @@ import copy
 
 long_line = '================================================================='
 short_line = '---------------------------------------------------------------'
+prompt_err_msg = 'invalid value entered, try again'
 
-def Twitch_Comment_to_data(comments:dict, chat_window=10): 
+def Twitch_Comment_to_data(comments:dict, chat_window=10, ignore_notices=True): 
     ''' takes a twitch comment formatted dict, outputs tuple of four items
-        first is speed, second is chat string data, third is time points of those chats, fourth is video id'''
+        first is speed, second is chat string data, third is time points of those chats, fourth is video id
+        ignore_notices is a bool value that decide whether to ignore sub/resub notices'''
     video_id = comments[0]['content_id']
     offsets = list()
     chats = list() 
+    ignored = 0
     for i in comments: 
+        notice = i['message']['user_notice_params']['msg-id']
+        if ignore_notices and not(notice in {'', None}): 
+            ignored += 1
+            continue
         offsets.append(i['content_offset_seconds']) 
         chats.append(i['message']['body']) 
         
@@ -23,7 +30,10 @@ def Twitch_Comment_to_data(comments:dict, chat_window=10):
     speed = offsets[chat_window::] - offsets[:-chat_window:]
     x = np.array(offsets[chat_window::],dtype=float) 
     speed = speed + 1.0/chat_window
-    speed = 1/speed
+    speed = 1/speed 
+    
+    if ignore_notices: 
+        print(f'Number of chats ignored is {ignored}')
     return (speed,chats,x,video_id)
 
 def prompt_for_int(message:str, min_v=None, max_v=None) -> int: 
@@ -75,6 +85,10 @@ def time_to_str(time:float) -> str:
     
     return (f'{hours}:{minutes}:{seconds}') 
 
+
+
+
+# ==================================================== clip class =============================================================
 class clip_it(): 
     
     available_labels = {0:'unlabeled',
@@ -83,10 +97,12 @@ class clip_it():
                         3:'amusement',
                         4:'disappointment', 
                         5:'shock', 
-                        6:'pure confusion'}
+                        6:'pure confusion', 
+                        7:'other'}
     
-    positive_labels = {1,2,3}
+    positive_labels = {2,3}
     negative_labels = {4,5,6}
+    neutral_labels =  {0,1,7}
     
     # IMPORTANT: when you add a class, make sure to add one the same way as indexing and put that number in binary class as well
     
@@ -148,7 +164,7 @@ class clip_it():
         ''' returns clip label in binary classification 
             1 is positive, -1 is negative, 0 is unlabeled (or something is wrong)
             typically, we do not want to use unlabeled, but it is up to the model maker''' 
-        if self.label == 0: 
+        if self.label in self.neutral_labels: 
             return 0 
         elif self.label in self.positive_labels: 
             return 1 
@@ -222,7 +238,7 @@ class clip_it():
         
         
         
-        
+# ======================================================== end of class ===============================================================
         
 
     
@@ -232,7 +248,7 @@ class clip_it():
 
 def Clip_from_Chat(speed, chats, time_points, video_id, min_len=5, threshold = 100): 
     ''' takes chat speed and string numpy array, turn into a list of clip class objects 
-        it will not clip if clip chat is less then 5 in length'''
+        it will not clip if clip chat is less then min_len in length, or below threshold% of average speed'''
     assert len(speed) == len(chats)
     assert len(chats) == len(time_points)
     N = len(speed) 
