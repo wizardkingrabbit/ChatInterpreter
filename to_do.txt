@@ -9,7 +9,7 @@ Before date:
 ===============================================================
 
 Before Feb/5/2021 [12:30]: 
-[] Duo Chen: finish debugging labeler print clip methods, deliver working clipper/labeler
+[x] Duo Chen: finish debugging labeler print clip methods, deliver working clipper/labeler
 
 Before Feb/7/2021 [23:59]: 
 [] Duo Chen: label at least 150 clips from streamer
