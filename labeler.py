@@ -1,6 +1,9 @@
 from Utilities import * 
+import numpy as np 
 import os 
+import json 
 import pickle 
+import copy 
 
 ''' This module prompt the user to enter clip pickle files and label them by hand
     users will also enter clip span duration, but that is optional''' 

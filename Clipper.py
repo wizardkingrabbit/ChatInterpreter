@@ -1,10 +1,72 @@
 from Utilities import * 
+import numpy as np 
 import os 
+from Clip import * 
+import json 
+import pickle 
+import copy 
 
 ''' This module prompts user to enter json file name for twitch stream chat
     The json file must be formatted as twitch chat format
     User will enter parameters, or choose to use default values'''
+    
+# ===================================== helper functions ============================================
+    
+def Twitch_Comment_to_data(comments:dict, chat_window=10, ignore_notices=True): 
+    ''' takes a twitch comment formatted dict, outputs tuple of four items
+        first is speed, second is chat string data, third is time points of those chats, fourth is video id
+        ignore_notices is a bool value that decide whether to ignore sub/resub notices'''
+    video_id = comments[0]['content_id']
+    offsets = list()
+    chats = list() 
+    ignored = 0
+    for i in comments: 
+        notice = i['message']['user_notice_params']['msg-id']
+        if ignore_notices and not(notice in {'', None}): 
+            ignored += 1
+            continue
+        offsets.append(i['content_offset_seconds']) 
+        chats.append(i['message']['body']) 
+        
+    chats = chats[chat_window::]
+    chats = np.char.array(chats, unicode=True) 
+    offsets = np.array(offsets, dtype=float)
+    speed = offsets[chat_window::] - offsets[:-chat_window:]
+    x = np.array(offsets[chat_window::],dtype=float) 
+    speed = speed + 1.0/chat_window
+    speed = 1/speed 
+    
+    if ignore_notices: 
+        print(f'Number of chats ignored is {ignored}')
+    return (speed,chats,x,video_id)
 
+
+def Clip_from_Chat(speed, chats, time_points, video_id, min_len=5, threshold = 100): 
+    ''' takes chat speed and string numpy array, turn into a list of clip class objects 
+        it will not clip if clip chat is less then min_len in length, or below threshold% of average speed'''
+    assert len(speed) == len(chats)
+    assert len(chats) == len(time_points)
+    N = len(speed) 
+    i = 0
+    avg_speed = speed.mean()
+    speed_threshold = (float(threshold)/100.0) * float(avg_speed)
+    clips = list()
+    while(i<N):
+        if speed[i] >= avg_speed: 
+            clip = clip_it(time_points[i], video_id)
+            while(i<N and speed[i] >= speed_threshold): 
+                clip.add_chat(time_points[i], chats[i])
+                i+=1 
+            if len(clip) >= min_len:
+                clip.end_time = time_points[i]
+                clips.append(clip)
+            
+        i+=1
+        
+    return clips 
+
+
+# ========================================= main =======================================================
 if __name__ == '__main__': 
     while(True):
         file_path = input('Enter json file path (WITH .json, enter exit to exit): ') 
@@ -109,18 +171,18 @@ if __name__ == '__main__':
             data = json.load(f) 
             
         comments = data['comments'] 
-        speed, chats, x, video_id = Twitch_Comment_to_data(comments=comments, chat_window=chat_window, ignore_notices=ignore_notices) 
-        clips = Clip_from_Chat(speed, chats=chats, time_points=x, video_id=video_id, min_len=min_clip_len, threshold=chat_speed_threshold) 
     except: 
         print('file format is not correct, exiting')
         exit(0)
+    speed, chats, x, video_id = Twitch_Comment_to_data(comments=comments, chat_window=chat_window, ignore_notices=ignore_notices) 
+    clips = Clip_from_Chat(speed, chats=chats, time_points=x, video_id=video_id, min_len=min_clip_len, threshold=chat_speed_threshold) 
                 
     
     print(f'Number of clips found is {len(clips)}')
     while(True): 
         clip_file_name = input('How do you want to name this pickle file? (WITHOUT .pkl): ') 
         while(True):
-            ans = input(f'Name is {clip_file_name}, are you sure? (y/n): ') 
+            ans = input(f'Name will be \"{clip_file_name}.pkl\", are you sure? (y/n): ') 
             if not(ans in {'y', 'n'}): 
                 print('invalid value entered, try again') 
                 continue
