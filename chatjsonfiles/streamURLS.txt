@@ -4,6 +4,10 @@ wardell[2].json : https://www.twitch.tv/videos/883592061?filter=archives&sort=ti
 wardell[3].json : https://www.twitch.tv/videos/889555583?filter=archives&sort=time
 wardell[4].json : https://www.twitch.tv/videos/891691635?filter=archives&sort=time
 TeosGame[0]: https://www.twitch.tv/videos/861200338?filter=archives&sort=time
+TeosGame[1]: https://www.twitch.tv/videos/862385700 
+TeosGame[2]: https://www.twitch.tv/videos/845273592
+TeosGame[3]: https://www.twitch.tv/videos/852889649 
+TeosGame[4]: https://www.twitch.tv/videos/855379636 
 T90Official[0].json: https://www.twitch.tv/videos/859982875?filter=archives&sort=time
 T90Official[1].json: https://www.twitch.tv/videos/844028278?filter=archives&sort=time
 T90Official[2].json https://www.twitch.tv/videos/888900301?filter=archives&sort=time
