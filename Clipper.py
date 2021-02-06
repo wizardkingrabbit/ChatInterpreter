@@ -57,7 +57,10 @@ def Clip_from_Chat(speed, chats, time_points, video_id, min_len=5, threshold = 1
             while(i<N and speed[i] >= speed_threshold): 
                 clip.add_chat(time_points[i], chats[i])
                 i+=1 
-            if len(clip) >= min_len:
+            if (i>=N and len(clip)>=min_len): 
+                clip.end_time = time_points[-1] 
+                clips.append 
+            elif len(clip) >= min_len:
                 clip.end_time = time_points[i]
                 clips.append(clip)
             
