@@ -10,7 +10,7 @@ TeosGame[3]: https://www.twitch.tv/videos/852889649
 TeosGame[4]: https://www.twitch.tv/videos/855379636 
 T90Official[0].json: https://www.twitch.tv/videos/859982875?filter=archives&sort=time
 T90Official[1].json: https://www.twitch.tv/videos/844028278?filter=archives&sort=time
-T90Official[2].json https://www.twitch.tv/videos/888900301?filter=archives&sort=time
-TheViper[0].json: https://www.twitch.tv/videos/846110109filter=archives&sort=time
-TheViper[1].json: https://www.twitch.tv/videos/867212060filter=all&sort=time
-TheViper[2].json:https://www.twitch.tv/videos/828980165filter=archives&sort=time
+T90Official[2].json: https://www.twitch.tv/videos/888900301?filter=archives&sort=time
+TheViper[0].json: https://www.twitch.tv/videos/846110109?filter=archives&sort=time
+TheViper[1].json: https://www.twitch.tv/videos/867212060?filter=all&sort=time
+TheViper[2].json: https://www.twitch.tv/videos/828980165?filter=archives&sort=time
