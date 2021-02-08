@@ -3,6 +3,7 @@ For visual easiness in reading, I think we put new things at the end of this fil
 
 
 Feb 17: 
+Duo Chen: 
 > Notification chats are ignored by option, but if someone send a sub-message with chat-inducing content (such as a birthday), 
   chat will increase in speed. The specific classification may depend on our manual bias. I put it as "other". 
   Someone else may put it as "special topic". This point can be brought up in project report. 
@@ -11,5 +12,10 @@ Feb 17:
   does not have monetary value. Bets can be "will this game be a win", or such. At the end of a bet, chat typically speeds up. 
   The classification depends on people, I put it on "other". 
 
-> There are parts where the streamer meets a hacker in game. Some chat's reactions are very similar to amusement at first, and then they mostly talk about it. 
+> There are parts where the streamer meets a hacker in game. 
+  Some chat's reactions are very similar to amusement at first, and then they mostly talk about it. 
   This also depend on person, but I put them as amusement because the reaction in the beginning is close to amusement. 
+
+> Some classifications are really rare, such as disappointment and shock. 
+  From my clips up to this point, I have about one in disappointment and none in shock. 
+  But of course, such thing depends on manual labeling bias and characteristics of the streamer. 
