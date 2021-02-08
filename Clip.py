@@ -12,7 +12,7 @@ class clip_it():
                         2:'amasement',
                         3:'amusement',
                         4:'disappointment', 
-                        5:'shock', 
+                        5:'shock, scared', 
                         6:'pure confusion', 
                         7:'other', 
                         8:'unfortunate (nice try)'} 

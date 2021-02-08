@@ -2,7 +2,7 @@ This txt file is just for us to jog down any things we find during any part of d
 For visual easiness in reading, I think we put new things at the end of this file (instead of in the beginning like in to_do txt) 
 
 
-Feb 17: 
+Feb 7: 
 Duo Chen: 
 > Notification chats are ignored by option, but if someone send a sub-message with chat-inducing content (such as a birthday), 
   chat will increase in speed. The specific classification may depend on our manual bias. I put it as "other". 
@@ -19,3 +19,13 @@ Duo Chen:
 > Some classifications are really rare, such as disappointment and shock. 
   From my clips up to this point, I have about one in disappointment and none in shock. 
   But of course, such thing depends on manual labeling bias and characteristics of the streamer. 
+
+
+
+Feb 8: 
+Duo Chen: 
+> category of clips does depend on type of streams, I added in new horror game vods and there is an increase in shock 
+  class clips. 
+
+> many clips has chat turning from one reaction to another within a time-span of two minutes, 
+  such as from shock/scared to amusement. 
