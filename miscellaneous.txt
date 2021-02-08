@@ -1,0 +1,15 @@
+This txt file is just for us to jog down any things we find during any part of development. 
+For visual easiness in reading, I think we put new things at the end of this file (instead of in the beginning like in to_do txt) 
+
+
+Feb 17: 
+> Notification chats are ignored by option, but if someone send a sub-message with chat-inducing content (such as a birthday), 
+  chat will increase in speed. The specific classification may depend on our manual bias. I put it as "other". 
+  Someone else may put it as "special topic". This point can be brought up in project report. 
+
+> Twitch has this functino of betting with channel points. For now, treat those points as arbitrary currencies that 
+  does not have monetary value. Bets can be "will this game be a win", or such. At the end of a bet, chat typically speeds up. 
+  The classification depends on people, I put it on "other". 
+
+> There are parts where the streamer meets a hacker in game. Some chat's reactions are very similar to amusement at first, and then they mostly talk about it. 
+  This also depend on person, but I put them as amusement because the reaction in the beginning is close to amusement. 

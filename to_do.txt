@@ -12,7 +12,7 @@ Before Feb/5/2021 [12:30]:
 [x] Duo Chen: finish debugging labeler print clip methods, deliver working clipper/labeler
 
 Before Feb/7/2021 [23:59]: 
-[] Duo Chen: label at least 150 clips from streamer
+[x] Duo Chen: label at least 150 clips from streamer
 [] JingTian Li: label at least 150 clips from streamer
 [] Nate: label at least 150 clips from streamer 
 
