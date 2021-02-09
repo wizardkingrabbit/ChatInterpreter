@@ -8,6 +8,22 @@ Before date:
 [] another person: task 
 ===============================================================
 
+Before Feb/10/2021 [15:30]: 
+[] Duo Chen: research on nltk, word2vec 
+    [] nltk 
+    [] word embedding, word2vec 
+
+[] Nate: research on word2vec 
+
+
+
+Before Feb/14/2021 [23:59]: 
+[] JingTian: research and implement learner module for bag of linear regression BOW 
+[] Nate and Duo Chen: research and implement word embedding and (optionally) neural network-based learner 
+[x] Duo Chen: find some vods of games from other category, such as horror game. 
+
+
+
 Before Feb/5/2021 [12:30]: 
 [x] Duo Chen: finish debugging labeler print clip methods, deliver working clipper/labeler
 
@@ -16,8 +32,3 @@ Before Feb/7/2021 [23:59]:
 [] JingTian Li: label at least 150 clips from streamer
 [] Nate: label at least 150 clips from streamer 
 
-
-Before Feb/14/2021 [23:59]: 
-[] JingTian: research and implement learner module for bag of linear regression BOW 
-[] Nate and Duo Chen: research and start implementing word embedding and neural network-based learner 
-[] Duo Chen: find some vods of games from other category, such as horror game. 

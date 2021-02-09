@@ -28,4 +28,9 @@ Duo Chen:
   class clips. 
 
 > many clips has chat turning from one reaction to another within a time-span of two minutes, 
-  such as from shock/scared to amusement. 
+  such as from shock/scared to amusement.  
+
+> a lot of noise in chats, mostly new viewer joining in, or people with irrelevant topics. 
+
+Nate: 
+> Different parameter specifications in clipping create data-inconsistency in manual processing
