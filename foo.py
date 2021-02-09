@@ -22,7 +22,7 @@ print(long_string)
 
 token_list = Simple_tokenizer(long_string) 
 
-bow = List_to_bow(token_list, n_gram=1, connector='-') 
+bow = List_to_bow(token_list, n_gram=2, connector='-') 
 
 print(long_line) 
 print('this is bow: ') 

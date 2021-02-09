@@ -18,7 +18,7 @@ Before Feb/10/2021 [15:30]:
 
 
 Before Feb/14/2021 [23:59]: 
-[] JingTian: research and implement learner module for bag of linear regression BOW 
+[] JingTian: research and implement learner module for bag of logistic regression BOW 
 [] Nate and Duo Chen: research and implement word embedding and (optionally) neural network-based learner 
 [x] Duo Chen: find some vods of games from other category, such as horror game. 
 

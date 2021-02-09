@@ -96,7 +96,7 @@ def List_to_bow(token_list:list, filter_func=Default_word_filter, modifier_func=
         assert type(token) == str, 'passed token not string' 
         if not filter_func(token): 
             continue 
-        ngram_window.append(token) 
+        ngram_window.append(modifier_func(token)) 
         if len(ngram_window) < n_gram: 
             continue
         if len(ngram_window) > n_gram: 
