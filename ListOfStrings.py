@@ -1,6 +1,7 @@
-### CREATES A PKL FILE WITH A LIST OF STRINGS (EACH STRING IS A CHAT MESSAGE).
+# creates a list of sentences where each sentence is a list of strings
+# each string is lowercase
 import numpy as np
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import json
 import os
 import pickle
@@ -9,6 +10,8 @@ import pickle
 def getListOfStrings(charArray:list, data):
     for comment in data['comments']:
             message = comment['message']['body']
+            message = message.lower()
+            message = message.split()
             chatArray.append(message)
 
 if __name__ == '__main__': 
