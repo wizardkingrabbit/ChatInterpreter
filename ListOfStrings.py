@@ -10,9 +10,10 @@ import pickle
 def getListOfStrings(charArray:list, data):
     for comment in data['comments']:
             message = comment['message']['body']
+            # next three lines are for tokenizing by space
             #message = re.sub(r'[^\w\s\?\!]', '', message)       # only include words, whitespaces, ?, !
-            message = message.lower()
-            message = message.split()
+            #message = message.lower()
+            #message = message.split()
             chatArray.append(message)
 
 if __name__ == '__main__': 
