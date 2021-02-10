@@ -33,7 +33,7 @@ if __name__ == '__main__':
     clip_path_list = [] 
     
     while(True):
-        file_path = input('Enter pkl clip file path (WITH .pkl, enter exit to exit, done to proceed): ') 
+        file_path = input('Enter pkl text file path (WITH .pkl, enter exit to exit, done to proceed): ') 
         
         if type(file_path) != str: 
             print('invalid value entered, try again') 

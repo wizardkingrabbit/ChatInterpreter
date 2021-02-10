@@ -9,9 +9,9 @@ Before date:
 ===============================================================
 
 Before Feb/10/2021 [15:30]: 
-[] Duo Chen: research on nltk, word2vec 
-    [] nltk 
-    [] word embedding, word2vec 
+[x] Duo Chen: research on nltk, word2vec 
+    [x] nltk 
+    [x] word embedding, word2vec 
 
 [] Nate: research on word2vec 
 

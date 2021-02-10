@@ -4,26 +4,12 @@ import pickle
 from Clip import *
 from Tokenizer_kit import *
 
+stop_words = set(nltk_stop_words) 
 
-with open('clip_data/TeosGame[2].pkl', 'rb') as f: 
-    data = pickle.load(f) 
-    
+stop_words = set()
 
-print(len(data)) 
-print(type(data))
-sample = data[20] 
-# print(sample) 
-print(type(sample)) 
 
-long_string = Concatenate_str_list(sample.chats) 
-print(long_line) 
-print('this is the long string: ') 
-print(long_string) 
+print(type(nltk_stop_words))
 
-token_list = Simple_tokenizer(long_string) 
-
-bow = List_to_bow(token_list, n_gram=2, connector='-') 
-
-print(long_line) 
-print('this is bow: ') 
-print(BOW_to_str(bow, indent=' ', top_k=10)) 
+for word in nltk_stop_words: 
+    print(' ' + word)
