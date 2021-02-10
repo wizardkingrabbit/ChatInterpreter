@@ -13,7 +13,7 @@ Before Feb/10/2021 [15:30]:
     [x] nltk 
     [x] word embedding, word2vec 
 
-[] Nate: research on word2vec 
+[x] Nate: research on word2vec 
 
 
 
