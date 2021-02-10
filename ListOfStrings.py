@@ -10,6 +10,7 @@ import pickle
 def getListOfStrings(charArray:list, data):
     for comment in data['comments']:
             message = comment['message']['body']
+            #message = re.sub(r'[^\w\s\?\!]', '', message)       # only include words, whitespaces, ?, !
             message = message.lower()
             message = message.split()
             chatArray.append(message)
