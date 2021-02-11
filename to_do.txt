@@ -8,6 +8,16 @@ Before date:
 [] another person: task 
 ===============================================================
 
+Before Feb/14/2021 [10:00]: 
+[] Duo Chen: finish making UI part of embedding 
+
+Before Feb/14/2021 [23:59]: 
+[] JingTian: research and implement learner module for bag of logistic regression BOW 
+[] Nate and Duo Chen: research and implement word embedding and (optionally) neural network-based learner 
+[x] Duo Chen: find some vods of games from other category, such as horror game. 
+
+
+
 Before Feb/10/2021 [15:30]: 
 [x] Duo Chen: research on nltk, word2vec 
     [x] nltk 
@@ -16,11 +26,6 @@ Before Feb/10/2021 [15:30]:
 [x] Nate: research on word2vec 
 
 
-
-Before Feb/14/2021 [23:59]: 
-[] JingTian: research and implement learner module for bag of logistic regression BOW 
-[] Nate and Duo Chen: research and implement word embedding and (optionally) neural network-based learner 
-[x] Duo Chen: find some vods of games from other category, such as horror game. 
 
 
 
