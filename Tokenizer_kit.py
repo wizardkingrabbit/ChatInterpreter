@@ -67,9 +67,10 @@ def Concatenate_str_list(str_list:list, random_order=False, splitter=os.linesep)
 
 # =============================== this part is for methods long strings into lists ==============================================
 
-def Simple_tokenizer(long_string:str, remove_stop_words=True, case_sensitive=False) -> list: 
+def Simple_tokenizer(long_string:str, remove_stop_words=True, stop_words=nltk_stop_words, case_sensitive=False) -> list: 
     ''' This module tokenize a long string, tokenize by white space, retaining marks such as question marks
-        parameter options are whether to remove stop_words (from nltk module), and whether it is case sensitive 
+        parameter options are whether to remove stop_words (from nltk module or specified otherwise), 
+        and whether it is case sensitive 
         return value is a list of tokens made'''
     if not case_sensitive: 
         long_string = long_string.lower() 

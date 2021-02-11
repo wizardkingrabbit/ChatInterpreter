@@ -43,3 +43,12 @@ JingTian Li:
   or majorly topic oriented. 
 
 > Games are usually vocabularily distinct 
+
+
+Feb 10: 
+Nate, Duo Chen:
+> some words in word2vec are completely messed up, with most similar word being irrelevant
+  some of those words can be calibrated by decreasing model complexity, so we are likely overfitting 
+
+> words from word2vec shows difference across streamers. Mixing streamers will give a more universal estimate on 
+  average chat community, but will introduce strange noise to specific words. 

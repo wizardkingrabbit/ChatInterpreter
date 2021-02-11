@@ -1,10 +1,11 @@
 # creates a list of sentences where each sentence is a list of strings
 # each string is lowercase
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import json
 import os
 import pickle
+from Clipper import *
 
 # making a function for easy moving if decide to put this somewhere else
 def getListOfStrings(charArray:list, data):
@@ -43,8 +44,10 @@ if __name__ == '__main__':
                 exit(0)
 
             # getListOfStrings
-            getListOfStrings(chatArray, data)
-            # print(len(chatArray))
+            # getListOfStrings(chatArray, data)
+            # print(len(chatArray)) 
+            _,to_extend,_,_ = Twitch_Comment_to_data(data['comments'], chat_window=1)
+            chatArray += to_extend.tolist() 
 
     while(True): 
         clip_file_name = input('How do you want to name this pickle file? (WITHOUT .pkl): ') 
