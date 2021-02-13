@@ -1,6 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import gensim
-from gensim.models import Word2Vec
+from gensim.models import Word2Vec, KeyedVectors
 
 from Utilities import * 
 import os 
@@ -50,6 +52,7 @@ def Compare_two_words(w1:str, w2:str, w_vector):
 #print(data[:100])
 model1 = gensim.models.Word2Vec(processed_data, min_count=20, size=300, window=7, iter=5)
 word_vectors = model1.wv 
+word_vectors.save('word_vectors/TeosGame_wv.kv') 
 # print("pog:amazing",model1.wv.similarity('pog', 'amazing'))
 # print("pog:pogchamp",model1.wv.similarity('pog', 'pogchamp'))
 # print("pog:sadge",model1.wv.similarity('pog', 'sadge'))
@@ -69,7 +72,7 @@ Compare_two_words('nice', 'noice', word_vectors)
 Compare_two_words('pog', 'kekw', word_vectors) 
 Compare_two_words('kekw', 'sadge', word_vectors) 
 Compare_two_words('kekw', 'pepelaugh', word_vectors) 
-Compare_two_words('sadge', 'd', word_vectors) 
-Compare_two_words(':', 'd', word_vectors)
+# Compare_two_words('sadge', 'd', word_vectors) 
+# Compare_two_words(':', 'd', word_vectors)
 
 #print(model1.wv.get_vector('pog'))

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 # creates a list of sentences where each sentence is a list of strings
 # each string is lowercase
 import numpy as np
@@ -8,18 +10,18 @@ import pickle
 from Clipper import *
 
 # making a function for easy moving if decide to put this somewhere else
-def getListOfStrings(charArray:list, data):
-    for comment in data['comments']:
-            message = comment['message']['body']
-            # next three lines are for tokenizing by space
-            #message = re.sub(r'[^\w\s\?\!]', '', message)       # only include words, whitespaces, ?, !
-            #message = message.lower()
-            #message = message.split()
-            chatArray.append(message)
+# def getListOfStrings(charArray:list, data):
+#     for comment in data['comments']:
+#             message = comment['message']['body']
+#             # next three lines are for tokenizing by space
+#             #message = re.sub(r'[^\w\s\?\!]', '', message)       # only include words, whitespaces, ?, !
+#             #message = message.lower()
+#             #message = message.split()
+#             chatArray.append(message)
 
 if __name__ == '__main__': 
     # prompt user to input json file
-    chatArray = list()
+    chats = [list(), list()] #list of two lists, first is chat, second is time stamps
 
     while(True):
         print("filename entered will have its messages added to listOfStrings.")
@@ -46,8 +48,9 @@ if __name__ == '__main__':
             # getListOfStrings
             # getListOfStrings(chatArray, data)
             # print(len(chatArray)) 
-            _,to_extend,_,_ = Twitch_Comment_to_data(data['comments'], chat_window=1)
-            chatArray += to_extend.tolist() 
+            _,chat_to_extend,time_to_extend,_ = Twitch_Comment_to_data(data['comments'], chat_window=1)
+            chats[0] += chat_to_extend.tolist() 
+            chats[1] += time_to_extend.tolist()
 
     while(True): 
         clip_file_name = input('How do you want to name this pickle file? (WITHOUT .pkl): ') 
@@ -61,6 +64,6 @@ if __name__ == '__main__':
     if (not os.path.exists('chat_words')) or (not os.path.isdir('chat_words')): 
         os.makedirs('chat_words')
     with open(os.path.join('chat_words', clip_file_name + '.pkl'), 'wb') as f: 
-        pickle.dump(chatArray, f)
+        pickle.dump(chats, f)
     exit(0)
 

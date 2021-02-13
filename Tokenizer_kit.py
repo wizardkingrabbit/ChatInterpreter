@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 # this module defines tokenizing tools for us to use in leaner modules. 
 # typically tokanizing take a long string, returns a collection of tokens
 # thus any processing to get the long string should be done outside the tokenizing functions

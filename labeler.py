@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from Utilities import * 
 import numpy as np 
 import os 
