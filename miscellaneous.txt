@@ -52,3 +52,11 @@ Nate, Duo Chen:
 
 > words from word2vec shows difference across streamers. Mixing streamers will give a more universal estimate on 
   average chat community, but will introduce strange noise to specific words. 
+
+
+Feb 14: 
+Duo Chen: 
+> names as words usually have associations with words of emotions. It maybe a general representation of audience's 
+  inner image of that person. For example, some names are closer to "lol" and some other are closer to "nice". 
+
+> we found one emote that differentiate in capitalization, one is haHAA, the other is HAhaa 

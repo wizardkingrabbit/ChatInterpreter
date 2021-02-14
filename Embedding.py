@@ -20,7 +20,7 @@ warnings.filterwarnings(action='ignore')
 w2v_prms = {'min_count':20, 
             'size': 300, 
             'window': 7, 
-            'iter': 5}
+            'iter': 5} 
 
 # ======================================= objects and methods =======================================
 
@@ -34,20 +34,117 @@ def Process_vod(data):
     return (chat_array, t_stamps)
    
    
-def Embedding_word_filter(word:str) -> bool: 
-    ''' Takes a word (token), determine if it is a valid token to be counted 
-        returns a bool''' 
-    if len(word)<2: 
-        return False 
-    else: 
-        return True 
-        
+embd_stop_words = set(nltk_stop_words) 
+def Embedding_word_modifier(word:str, stop_words = embd_stop_words) -> str: 
+    ''' Takes a word, check for varies conditions, make modifications, return result, None if in stop words''' 
     
-custom_stop_words = set(nltk_stop_words) 
-custom_stop_words.update({',', '\'', '(', ')', '.', '@'}) 
-def Embedding_tokenize(sentence:str, word_filter=Embedding_word_filter) -> list: 
+    # match F, special case 
+    F = re.compile("^\s[Ff]\s$") 
+    if re.match(F, word): 
+        return "F" 
+    # other than special cases, remove stop words
+    if word in stop_words: 
+        return None
+    # match question marks ???
+    q_marks = re.compile("^\?{2,}$") 
+    if re.match(q_marks, word): 
+        return "???" 
+    # match exclmtn marks !!!
+    exclmtn_marks = re.compile("^!{2,}$") 
+    if re.match(exclmtn_marks, word): 
+        return "!!!" 
+    # match ??!?!??!? 
+    q_exc_marks = re.compile("^[!?]{2,}$") 
+    if re.match(q_exc_marks, word): 
+        return "!?" 
+    # match variations of pog
+    pog = re.compile("^p+o+g+$") 
+    if re.match(pog, word): 
+        return "pog" 
+    # match variations of nice
+    nice = re.compile("^n+i+c+e+u*|n+a+i+s+u+$") 
+    if re.match(nice, word): 
+        return "nice" 
+    # match variations of noice 
+    noice = re.compile("^n+o+i+c+e+$") 
+    if re.match(noice, word): 
+        return "noice" 
+    # match variations of haha 
+    haha = re.compile("^(ha){2,}h?$|h{3,}$") 
+    if re.match(haha, word): 
+        return "haha" 
+    # match variations of lol 
+    lol = re.compile("^l+o+l+$") 
+    if re.match(lol, word): 
+        return "lol" 
+    # match variations of lul 
+    lul = re.compile("^l+u+l+$") 
+    if re.match(lul, word): 
+        return "lul" 
+    # match variations of lmao
+    lmao = re.compile("^lmf?ao+$") 
+    if re.match(lmao, word): 
+        return "lmao" 
+    # match variations of yes 
+    yes = re.compile("^y+e+s+$") 
+    if re.match(yes, word): 
+        return "yes" 
+    # match variations of noo 
+    noo = re.compile("^n+o{2,}$") 
+    if re.match(noo, word): 
+        return "noo" 
+    # match variations of no 
+    no = re.compile("^(no){2,}$") 
+    if re.match(no, word): 
+        return "no" 
+    # match variations of yeah 
+    yeah = re.compile("^y+e+a+h*$|^ya$|^ye+$") 
+    if re.match(yeah, word): 
+        return "yeah" 
+    # match variations of ree 
+    ree = re.compile("^r+e+$") 
+    if re.match(ree, word): 
+        return "ree" 
+    # match variations of oof 
+    oof = re.compile("^o{2,}f+$") 
+    if re.match(oof, word): 
+        return "oof" 
+    # match variations of pogu 
+    pogu = re.compile("^p+o+g+u+$") 
+    if re.match(pogu, word): 
+        return "pogu" 
+    # xd 
+    xd = re.compile("^xd+$") 
+    if re.match(xd, word): 
+        return "xd" 
+    # ez 
+    ez = re.compile("^e+z+$") 
+    if re.match(ez, word): 
+        return "ez" 
+    # money 
+    money = re.compile("^mo+ne+y+$") 
+    if re.match(money, word): 
+        return "money" 
+    
+    return word 
+    
+
+def Embedding_tokenize(sentence:str, word_filter=Embedding_word_modifier, case_sensitive=False) -> list: 
     ''' Tokenization customized to embedding, takes a sentence and returns a list of tokens''' 
-    to_return = Simple_tokenizer(long_string=sentence, stop_words=custom_stop_words)
+    # chech case sensitivity 
+    if not case_sensitive: 
+        sentence = sentence.lower() 
+    # make token pattern and match them
+    token_pattern = "\s[Ff]\s|[:;]\)|[^\s',@.():]{2,}|\w:|:\w\s" 
+    token_pattern = re.compile(token_pattern) 
+    raw_tokens = re.findall(token_pattern, sentence) 
+    
+    # put each token through a modifier, which also check for validity 
+    to_return = list()
+    for token in raw_tokens: 
+        modified = Embedding_word_modifier(word=token) 
+        if modified!=None: 
+            to_return.append(modified) 
     return to_return 
 
 
@@ -96,8 +193,8 @@ def Thread_chats(chat_list:list, block_size=100) -> list:
     to_return = list() 
     i=0
     while (i < len(chat_list)): 
-        i+=100 
-        sentence = chat_list[i-100:i] 
+        i+=block_size 
+        sentence = chat_list[i-block_size:i] 
         sentence = Concatenate_str_list(str_list=sentence, splitter=' ') 
         to_return.append(sentence) 
         
@@ -234,7 +331,13 @@ def Train_new_model_once(params=w2v_prms) -> gensim.models.KeyedVectors:
         
         raw_chats = Cut_ends(chat_array=chat_array, t_stamps=t_stamps, start_time=start_time, end_time=end_time) 
         raw_chats = Thread_chats(chat_list=raw_chats) 
-        for sentence in raw_chats:
+        length = len(raw_chats) 
+        prev_percent = 0
+        for i,sentence in enumerate(raw_chats): 
+            percent = int(10*i/length) 
+            if percent>prev_percent: 
+                print(f"Tokenizing chats, {percent*10}% done...") 
+                prev_percent=percent
             corpus.append(Embedding_tokenize(sentence=sentence)) 
         continue 
     
@@ -268,6 +371,9 @@ def Train_new_model_sequential(params=w2v_prms) -> gensim.models.KeyedVectors:
             break 
         elif file_path=='check': 
             print(long_line)
+            if first_run: # error when no file is entered
+                print(f"You have to enter at least one file to check") 
+                continue
             Check_trained_model(word_vector=model) 
             continue
         try:
@@ -289,7 +395,13 @@ def Train_new_model_sequential(params=w2v_prms) -> gensim.models.KeyedVectors:
         raw_chats = Cut_ends(chat_array=chat_array, t_stamps=t_stamps, start_time=start_time, end_time=end_time) 
         raw_chats = Thread_chats(chat_list=raw_chats) 
         chats_to_train = list() 
-        for sentence in raw_chats:
+        prev_percent = 0 
+        length=len(raw_chats)
+        for i,sentence in enumerate(raw_chats): 
+            percent = int(10*i/length) 
+            if percent>prev_percent: 
+                print(f"Tokenizing chats, {percent*10}% done...") 
+                prev_percent=percent
             chats_to_train.append(Embedding_tokenize(sentence=sentence)) 
             
         print(f"Training...") 
@@ -328,9 +440,13 @@ def Save_wv(word_vector):
     return 
 
 
-def Prompt_for_wv() -> gensim.models.KeyedVectors: 
+def Load_wv(file_path=None) -> gensim.models.KeyedVectors: 
     ''' This function is called by main to prompt for a keyed vector file 
         which is loaded and returned ''' 
+    if file_path!=None: 
+        to_return = gensim.models.KeyedVectors.load(file_path) 
+        assert type(to_return)==gensim.models.KeyedVectors 
+        return to_return 
     while(True): 
         file_path = prompt_for_file(f"Enter .kv file path (WITH .kv): ") 
         try:
@@ -343,16 +459,11 @@ def Prompt_for_wv() -> gensim.models.KeyedVectors:
     return to_return 
 
 
+
 # ====================================== end of objects and methods ====================================
 
 
-
-
-
-# ====================================== user prompts =============================================== 
-
-
-if __name__ == '__main__': 
+def main(): 
     while(True): 
         print(long_line)
         print(f"Train new model sequentially ('trainS')? Or train at once ('trainO')? Or check existing model ('check')? Or exit ('exit')?") 
@@ -372,9 +483,18 @@ if __name__ == '__main__':
             Save_wv(word_vector=word_vector) 
             continue
         elif ans=='check': 
-            word_vector = Prompt_for_wv() 
+            word_vector = Load_wv() 
             Check_trained_model(word_vector=word_vector) 
             continue 
         elif ans=='exit': 
             break 
+        
+    return 
+
+
+# ====================================== user prompts =============================================== 
+
+
+if __name__ == '__main__': 
+    main() 
     exit(0) 
