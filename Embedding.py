@@ -11,11 +11,16 @@ from Tokenizer_kit import *
 from Clipper import * 
 import json 
 import gensim.models
-
+import re 
 
 import warnings 
 warnings.filterwarnings(action='ignore')
 
+# default parameters for training model
+w2v_prms = {'min_count':20, 
+            'size': 300, 
+            'window': 7, 
+            'iter': 5}
 
 # ======================================= objects and methods =======================================
 
@@ -27,15 +32,22 @@ def Process_vod(data):
     _,chat_array,t_stamps,_ = Twitch_Comment_to_data(data['comments'], chat_window=1) 
     assert len(chat_array) == len(t_stamps) 
     return (chat_array, t_stamps)
+   
+   
+def Embedding_word_filter(word:str) -> bool: 
+    ''' Takes a word (token), determine if it is a valid token to be counted 
+        returns a bool''' 
+    if len(word)<2: 
+        return False 
+    else: 
+        return True 
+        
     
-    
-def Cut_ends(chat_array:np.array, t_stamps:np.array, start_time:float, end_time:float) -> list: 
-    ''' This function cut ends of a chat list based on start time and end time''' 
-    to_return = list() 
-    for i in range(len(t_stamps)): 
-        if start_time<t_stamps[i] and t_stamps[i]<end_time: 
-            to_return.append(str(chat_array[i])) 
-            
+custom_stop_words = set(nltk_stop_words) 
+custom_stop_words.update({',', '\'', '(', ')', '.', '@'}) 
+def Embedding_tokenize(sentence:str, word_filter=Embedding_word_filter) -> list: 
+    ''' Tokenization customized to embedding, takes a sentence and returns a list of tokens''' 
+    to_return = Simple_tokenizer(long_string=sentence, stop_words=custom_stop_words)
     return to_return 
 
 
@@ -68,6 +80,16 @@ def Prompt_for_end_duration(max_v:int) -> float:
     return float(ending_duration)
 
 
+def Cut_ends(chat_array:np.array, t_stamps:np.array, start_time:float, end_time:float) -> list: 
+    ''' This function cut ends of a chat list based on start time and end time''' 
+    to_return = list() 
+    for i in range(len(t_stamps)): 
+        if start_time<t_stamps[i] and t_stamps[i]<end_time: 
+            to_return.append(str(chat_array[i])) 
+            
+    return to_return 
+
+
 def Thread_chats(chat_list:list, block_size=100) -> list: 
     ''' This function thread together chat messages, every block of chat is threaded into one sentence
         returns a list of threaded sentences'''
@@ -80,14 +102,26 @@ def Thread_chats(chat_list:list, block_size=100) -> list:
         to_return.append(sentence) 
         
     return to_return
-        
-        
 
-custom_stop_words = set(nltk_stop_words) 
-def Embedding_tokenize(sentence:str) -> list: 
-    ''' Tokenization customized to embedding, takes a sentence and returns a list of tokens''' 
-    to_return = Simple_tokenizer(long_string=sentence, stop_words=custom_stop_words)
-    return to_return
+
+def Vector_of(word_vector, word:str) -> np.ndarray: 
+    ''' This function go fetch the vector of passed word in word vector, 
+        returns None if error happen''' 
+    try: 
+        to_return = word_vector[word] 
+        return to_return 
+    except: 
+        return None 
+
+
+def Similarity_to_float(word_vector, w1:str, w2:str) -> float: 
+    ''' This function returns the similarity of two words in passed vector, 
+        if error happen, returns None''' 
+    try: 
+        to_return = word_vector.similarity(w1,w2) 
+        return float(to_return) 
+    except: 
+        return None 
 
 
 def Most_similar_to(word_vector, word:str, top_k:int) -> str: 
@@ -96,7 +130,7 @@ def Most_similar_to(word_vector, word:str, top_k:int) -> str:
     to_return = (short_line + os.linesep)
     to_return += f"{top_k} most similar words of [{word}] are: " + os.linesep  
     try: 
-        for w,v in word_vector.wv.most_similar(word, topn=top_k): 
+        for w,v in word_vector.most_similar(word, topn=top_k): 
             to_return += f">>[{w}]: {v} {os.linesep}" 
     except KeyError: 
         return f"Word [{word}] not in vocabulary" 
@@ -109,7 +143,7 @@ def Compare_two_words(word_vector, w1:str, w2:str) -> str:
         special string is returned if word not in vocab''' 
     try: 
         to_return = (short_line + os.linesep)
-        to_return += (f"[{w1}]:[{w2}] has similarity {word_vector.wv.similarity(w1, w2)}") 
+        to_return += (f"[{w1}]:[{w2}] has similarity {word_vector.similarity(w1, w2)}") 
         return to_return 
     except KeyError: 
         return "One of the words is not in vocab" 
@@ -140,17 +174,94 @@ def Check_trained_model(word_vector):
             continue
     return 
 
-def Train_new_model() -> gensim.models.KeyedVectors: 
-    ''' This is for main to call when user want to train a new model 
+
+def Prompt_for_training_params() -> dict: 
+    ''' This model prompt for training parameters of word2vec, 
+        if user decided to use default, returned value is None''' 
+    while(True): 
+        ans = prompt_for_str('Do you want to use deault params? (y/n/i) i for info: ', options={'y','n','i'}) 
+        if ans=='i': 
+            print(short_line)
+            print(f"training a embedding requires these params:")
+            print(f"[min count] for words, which is  lowest frequency to not ignore") 
+            print(f"[size], which is the size of the vector") 
+            print(f"[window], which is how many words count as context") 
+            print(f"[iter], which is how many times the model go through the data") 
+            print(f"Default params are: {os.linesep} {w2v_prms}")
+            continue 
+        elif ans=='y': 
+            return None 
+        elif ans=='n': 
+            break 
+        
+    to_return = dict() 
+    for param in w2v_prms.keys(): 
+        ans = prompt_for_int(f"Enter your choice of [{param}] in int here: ", min_v=1) 
+        to_return.update( {str(param):int(ans)} ) 
+    return to_return 
+
+
+def Train_new_model_once(params=w2v_prms) -> gensim.models.KeyedVectors: 
+    ''' This model will prompt user to enter a collection of files first,
+        and then train a word2vec model at once on the generated chat''' 
+    print('Training new word2vec object...') 
+    corpus = list() 
+    while(True): 
+        print(short_line)
+        print("Enter json file path (WITH .json, enter 'fin' to finish training)")
+        file_path = prompt_for_file('Enter here: ', exit_conds={'fin'}) 
+        if file_path=='fin': 
+            if len(corpus)==0: 
+                print(f"at least one file has to be entered") 
+                continue
+            print(f"Finished entering")
+            break 
+        try:
+            with open(file_path, encoding='utf-8') as f: 
+                data = json.load(f) 
+            chat_array, t_stamps = Process_vod(data=data)  
+        except: 
+            print('file entered not valid') 
+            continue
+        
+        end_time = t_stamps[-1] 
+        start_time = Prompt_for_start_time(max_v=int(end_time)) 
+        ending_duration = Prompt_for_end_duration(max_v=end_time) 
+        end_time -= ending_duration 
+        if end_time <= start_time: 
+            print('Time interval invalid, enter info again') 
+            continue 
+        
+        raw_chats = Cut_ends(chat_array=chat_array, t_stamps=t_stamps, start_time=start_time, end_time=end_time) 
+        raw_chats = Thread_chats(chat_list=raw_chats) 
+        for sentence in raw_chats:
+            corpus.append(Embedding_tokenize(sentence=sentence)) 
+        continue 
+    
+    print('Training...') 
+    model = gensim.models.Word2Vec(sentences=corpus, 
+                                   min_count=params['min_count'], 
+                                   size=params['size'], 
+                                   window=params['window'], 
+                                   iter=params['iter']) 
+    print(f"Finished training, to check model, save file and check it after") 
+    return model.wv 
+
+
+def Train_new_model_sequential(params=w2v_prms) -> gensim.models.KeyedVectors: 
+    ''' This is for main to call when user want to train a new model sequentially on json files
         returns the keyed vector object as trained result''' 
     first_run=True  
-    model = gensim.models.Word2Vec(min_count=20, size=300, window=7, iter=5) 
+    model = gensim.models.Word2Vec(min_count=params['min_count'], 
+                                   size=params['size'], 
+                                   window=params['window'], 
+                                   iter=params['iter']) 
     print('Training new word2vec object...')
     while(True): 
         print(short_line)
         if not first_run:
             print('Keep training')
-        print("Enter json text file path (WITH .json, enter 'fin' to finish training, 'check' to check current model)")
+        print("Enter json file path (WITH .json, enter 'fin' to finish training, 'check' to check current model)")
         file_path = prompt_for_file('Enter here: ', exit_conds={'fin','check'}) 
         if file_path=='fin': 
             print(f"Finished training")
@@ -194,7 +305,7 @@ def Train_new_model() -> gensim.models.KeyedVectors:
         continue
     
     return model.wv 
-            
+
 
 def Save_wv(word_vector): 
     ''' This function takes a keyed word vector and store is with a series of prompts'''
@@ -206,7 +317,7 @@ def Save_wv(word_vector):
         ans = prompt_for_str('Enter file name (WITHOUT .kv): ') 
         ans+='.kv' 
         kv_path = os.path.join('word_vectors', ans) 
-        ans = prompt_for_str(f"file will be stored as {ans}, are you sure? (y/n)", options={'y','n'}) 
+        ans = prompt_for_str(f"file will be stored as {ans}, are you sure? (y/n): ", options={'y','n'}) 
         if ans=='y': 
             break 
         else: 
@@ -230,6 +341,8 @@ def Prompt_for_wv() -> gensim.models.KeyedVectors:
             print(f"error occurred while loading file {file_path}") 
             continue 
     return to_return 
+
+
 # ====================================== end of objects and methods ====================================
 
 
@@ -242,10 +355,20 @@ def Prompt_for_wv() -> gensim.models.KeyedVectors:
 if __name__ == '__main__': 
     while(True): 
         print(long_line)
-        print(f"Train new model ('train')? Or check existing model ('check')? Or exit ('exit')?") 
-        ans = prompt_for_str(f"Enter here: ", options={'train','check','exit'}) 
-        if ans=='train': 
-            word_vector = Train_new_model() 
+        print(f"Train new model sequentially ('trainS')? Or train at once ('trainO')? Or check existing model ('check')? Or exit ('exit')?") 
+        ans = prompt_for_str(f"Enter here: ", options={'trainS', 'trainO','check','exit'}) 
+        if ans=='trainS': 
+            new_prms = Prompt_for_training_params() 
+            if new_prms!=None: 
+                w2v_prms.update(new_prms) 
+            word_vector = Train_new_model_sequential() 
+            Save_wv(word_vector=word_vector) 
+            continue 
+        elif ans=='trainO': 
+            new_prms = Prompt_for_training_params() 
+            if new_prms!=None: 
+                w2v_prms.update(new_prms)
+            word_vector=Train_new_model_once() 
             Save_wv(word_vector=word_vector) 
             continue
         elif ans=='check': 

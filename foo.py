@@ -37,11 +37,18 @@ wv = KeyedVectors.load('word_vectors/TeosGame_wv.kv')
 # # Compare_two_words('paddy', 'teo', wv)  
 # Compare_two_words('katie', 'nice', wv, top_n=0) 
 
-for name in ['teo', 'lukas', 'katie', 'sammy', 'alex', 'paddy', 'butt']: 
-    Compare_two_words(name, 'nice', wv, top_n=0) 
-    Compare_two_words(name, 'pog', wv, top_n=0) 
-    Compare_two_words(name, 'lul', wv, top_n=0) 
-    Compare_two_words(name, 'kekw', wv, top_n=0) 
-    Compare_two_words(name, 'pepelaugh', wv, top_n=0) 
+# for name in ['teo', 'lukas', 'katie', 'sammy', 'alex', 'paddy', 'butt']: 
+#     Compare_two_words(name, 'nice', wv, top_n=0) 
+#     Compare_two_words(name, 'pog', wv, top_n=0) 
+#     Compare_two_words(name, 'lul', wv, top_n=0) 
+#     Compare_two_words(name, 'kekw', wv, top_n=0) 
+#     Compare_two_words(name, 'pepelaugh', wv, top_n=0) 
+print(type(wv['teo'])) 
+if wv['teo']: 
+    print('yes') 
+elif None: 
+    print('none') 
+    
+# print(wv['teo'])
 
 # print(wv.closer_than('teo', 'kekw'))

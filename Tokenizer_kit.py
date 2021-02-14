@@ -8,7 +8,8 @@ import os
 import numpy as np 
 import nltk 
 from nltk.corpus import stopwords 
-from collections import defaultdict
+from collections import defaultdict 
+import re 
 
 nltk_stop_words = set(stopwords.words('english'))
 

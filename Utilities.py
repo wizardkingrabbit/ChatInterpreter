@@ -50,6 +50,7 @@ def prompt_for_float(message:str, min_v=None, max_v=None) -> float:
         
     return ans 
 
+
 def prompt_for_str(message:str, options={}) -> str: 
     ''' prompt for a string and check if it is in the options, if options not specified, if is returned directly''' 
     while(True): 
@@ -75,6 +76,7 @@ def prompt_for_file(message:str, exit_conds={}) -> str:
         else: 
             return file_path   
 
+
 def time_to_str(time:float) -> str: 
     ''' return a formated str of time in h:m:s'''
     time = int(time) 
@@ -85,5 +87,10 @@ def time_to_str(time:float) -> str:
     return (f'{hours}:{minutes}:{seconds}') 
 
     
-
+def Clip_chat_filter(chat:str, context:list) -> bool: 
+    ''' Takes a chat message, determine if it is counted as a valid chat with context list 
+        context is a list of chats that contains that chat, 
+        returned value is bool''' 
+        
+    return True  
 
