@@ -135,7 +135,7 @@ def Embedding_tokenize(sentence:str, word_filter=Embedding_word_modifier, case_s
     if not case_sensitive: 
         sentence = sentence.lower() 
     # make token pattern and match them
-    token_pattern = "\s[Ff]\s|[:;]\)|[^\s',@.():]{2,}|\w:|:\w\s" 
+    token_pattern = "\s[Ff]\s|[?!]{2,}|[:;]\)|[^\s',@.():?!]{2,}|\w:|:\w\s" 
     token_pattern = re.compile(token_pattern) 
     raw_tokens = re.findall(token_pattern, sentence) 
     
