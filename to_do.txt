@@ -10,6 +10,7 @@ Before date:
 
 Before Feb/16/2021 [17:00]: 
 [] Duo Chen: finish learner template 
+[] Duo Chen: new methods in tokenizer kit 
 
 Before Feb/19/2021 [23:59]: 
 [] Nate, Duo Chen: make progress on RNN 
