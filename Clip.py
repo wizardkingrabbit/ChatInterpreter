@@ -32,7 +32,9 @@ class clip_it():
         self.end_time = -1
         self.label = 0
         self.span_duration = span_duration
-        self.video_id = video_id
+        self.video_id = video_id 
+        self.pred_label = 0 
+        self.pred_binary_label = 0 
         
 
     def __len__(self): 
@@ -44,6 +46,11 @@ class clip_it():
             to_return += f'[{i}] [{time_to_str(self.time_stamps[i])}]: {self.chats[i]}' 
             to_return += os.linesep 
             
+        to_return += (f"true label is [{self.label}]: {self.available_labels[self.label]}" + os.linesep)
+        to_return += (f"true binary label is [{self.get_label_binary()}]" + os.linesep) 
+        to_return += (f"predicted label is [{self.pred_label}]: {self.available_labels[self.pred_label]}" + os.linesep) 
+        to_return += (f"predicted binary label is [{self.pred_binary_label}]" + os.linesep)
+            
         return to_return
     
     def add_chat(self, T:float, chat:str): 
@@ -51,6 +58,7 @@ class clip_it():
         self.time_stamps.append(float(T)) 
         self.chats.append(str(chat)) 
         return None 
+    
     
     def copy(self): 
         ''' make a copy of itself''' 
@@ -72,19 +80,31 @@ class clip_it():
         else: 
             return True
     
+    
     def chat_duration(self) -> float: 
         ''' returns the duration is the clip in floats unit is seconds ''' 
         assert self.is_valid() 
         return self.end_time - self.start_time 
     
+    
     def set_label(self, n:int): 
         ''' sets the label for this clip, entered value must be within label index'''
         
-        assert n < len(self.available_labels), 'entered invalid value in clip labeling' 
+        assert n in self.available_labels.keys(), 'entered invalid value in clip labeling' 
         
         self.label = n
         
         
+    def set_pred_label(self, n:int): # set the prediction label of the clip 
+        assert n in self.available_labels.keys(), f"Entered label not valid" 
+        self.pred_label = n 
+        
+        
+    def set_pred_binary_label(self, n:int): # set the prediction of binary label 
+        assert n in {-1,1}, f"Entered invalid label" 
+        self.pred_binary_label=n 
+    
+    
     def set_span_duration(self, span:float): 
         self.span_duration = span
         
@@ -92,6 +112,7 @@ class clip_it():
     def get_label(self) -> str: 
         ''' returns the label string for this clip''' 
         return self.available_labels[self.label] 
+    
     
     def get_label_binary(self) -> int: 
         ''' returns clip label in binary classification 
@@ -105,8 +126,16 @@ class clip_it():
             return -1
         else: 
             return 0 
-            
         
+            
+    def get_pred_label(self) -> int: # return the prediction label 
+        return self.pred_label 
+    
+    
+    def get_pred_label_binary(self) -> int: # return the predicted binary label 
+        return self.pred_binary_label
+         
+    
     def label_info(self) -> dict: 
         ''' return the possible label dict for the clips''' 
         return self.available_labels 

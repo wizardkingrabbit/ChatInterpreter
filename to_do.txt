@@ -8,8 +8,23 @@ Before date:
 [] another person: task 
 ===============================================================
 
+Before Feb/16/2021 [17:00]: 
+[] Duo Chen: finish learner template 
+
+Before Feb/19/2021 [23:59]: 
+[] Nate, Duo Chen: make progress on RNN 
+
+
+Before Feb/18/2021 [23:59]: 
+[] Jint Tian: modify log_regression code to learner specification
+
+
+Before Feb/21/2021 [23:59]: 
+[] Duo Chen: start research on en-decoder, transformer
+
+
 Before Feb/14/2021 [10:00]: 
-[] Duo Chen: finish making UI part of embedding 
+[x] Duo Chen: finish making UI part of embedding 
 
 Before Feb/14/2021 [23:59]: 
 [] JingTian: research and implement learner module for bag of logistic regression BOW 

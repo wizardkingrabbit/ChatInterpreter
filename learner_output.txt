@@ -1,0 +1,68 @@
+terminal fter running learner.py: 
+
+================= case 1 normal sequential ===================
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: s 
+> Enter file path (with .pkl), 'fin' to finish, 'e' to exit: file path 
+> Enter file path, 'fin'.....: file path another 
+..... 
+> Enter file path, 'fin'....: fin 
+> Enter testing fraction: 0.2 
+> # any other options special to learner: 
+> Printing out test result: 
+> Total number of clips: <int> 
+> default accuracy: <percentage> 
+> training accuracy: <percentage> 
+> test accuracy: <percentage> 
+> test auc: <percentage> 
+> Number of mis-labeled test clips: <int> 
+> Do you want to save this file? (y/n): y 
+> File will be saved in folder ./mislabeled/<file name>
+> Enter your desired file name (without .pkl): XXXXX 
+> file saved as ./mislabeled/XXXXX.pkl 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: s 
+
+
+================== case 2 normal folder =====================
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: f 
+> Enter folder path, 'e' to exit: folder path 
+> Enter testing fraction: 0.2 
+> # any other options special to learner: 
+> Printing out test result: 
+> Total number of clips: <int> 
+> default accuracy: <percentage> 
+> training accuracy: <percentage> 
+> test accuracy: <percentage> 
+> test auc: <percentage> 
+> Number of mis-labeled test clips: <int> 
+> Do you want to save this file? (y/n): y 
+> File will be saved in folder ./mislabeled/<file name>
+> Enter your desired file name (without .pkl): XXXXX 
+> file saved as ./mislabeled/XXXXX.pkl 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: 
+
+
+
+================== case 3 sequential exit ====================
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: s 
+> Enter file path, 'fin' to finish, 'e' to exit: e 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: 
+
+
+================= case 4 sequential file error ======================
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: s 
+> Enter file path, 'fin' to finish, 'e' to exit: file path #error-some file path 
+> Error: file entered invalid, enter again 
+> Enter file path, 'fin' to finish, 'e' to exit: 
+
+================= case 5 folder exit ===============================
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: f 
+> Enter folder path, 'e' to exit: e 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: 
+
+
+================= case 6 folder error ============================== 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: f 
+> Enter folder path, 'e' to exit: folder path #folder has invalid file 
+> Error: folder contains invalid file 
+> Enter folder path, 'e' to exit: 
+

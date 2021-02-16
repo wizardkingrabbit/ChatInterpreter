@@ -60,3 +60,8 @@ Duo Chen:
   inner image of that person. For example, some names are closer to "lol" and some other are closer to "nice". 
 
 > we found one emote that differentiate in capitalization, one is haHAA, the other is HAhaa 
+
+
+Feb 16: 
+Jing Tian: 
+> in testing, there can be unseen vocabs not in training set. 

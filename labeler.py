@@ -58,11 +58,11 @@ if __name__ == '__main__':
             print('printing chat') 
             print(short_line) 
             print(clip) 
-            
-        print(short_line)
-        print(f'Available labels are {clip.label_info_to_str()}')
-        print(f'current label of the clip is [{clip.get_label()}]')
-        print(f'current binary label for the clip is [{clip.get_label_binary()}]')
+        elif ans=='n': 
+            print(short_line)
+            print(f'Available labels are {clip.label_info_to_str()}')
+            print(f'current label of the clip is [{clip.get_label()}]')
+            print(f'current binary label for the clip is [{clip.get_label_binary()}]')
         ans = prompt_for_int('Enter a label index in int: ',min_v=0, max_v=len(clip.label_info())-1)  
         
         clip.set_label(ans) 
