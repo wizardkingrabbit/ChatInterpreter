@@ -15,7 +15,7 @@ warnings.filterwarnings(action='ignore')
 
 # ======================================= objects and methods =======================================
 
-# ====================================== data loader =================================================
+# ====================================== data loader
 def Load_clips_from_file(file_path:str) -> list: # load clip list from a passed file path 
     ''' load the clip list from given file path, 
         return empty list if a file is not formated as a list of clips
@@ -85,7 +85,7 @@ def Prompt_for_data() -> list: # prompt for and load data
     return to_return
             
 
-# ===================================== learner methods ============================================
+# ===================================== learner methods 
 
 def Train_and_test_learner(learner, X:list, Y, test_ratio:float) -> tuple: # train the passed learner and return filed cases 
     ''' This function should train on passed X,Y data with test_ration split 
