@@ -96,16 +96,17 @@ def prompt_for_dir(message:str, exit_conds={}) -> str: # prompt for dir path or 
             
 def prompt_for_save_file(dir_path:str, f_format:str, ) -> str: # do a series of prompts for a path to save file
     ''' Takes a directory path, a format string for file 
-        prompt for desired file name within that dir'''
+        prompt for desired file name within that dir, return the file path
+        if user do not want to save file, return None'''
     ans = prompt_for_str('save file? (y/n): ', options={'y','n'}) 
     if ans=='n': 
         return None 
-    print(f"file will be stored as ./{dir_path}/<YOUR FILE NAME>{f_format}")
     while(True): 
+        print(f"file will be stored as ./{dir_path}/<YOUR FILE NAME>{f_format}")
         ans = prompt_for_str(f"Enter file name (WITHOUT {f_format}): ") 
         ans+=f_format
         file_path = os.path.join(dir_path, ans) 
-        ans = prompt_for_str(f"file will be stored as {ans}, are you sure? (y/n): ", options={'y','n'}) 
+        ans = prompt_for_str(f"file will be stored as {file_path}, are you sure? (y/n): ", options={'y','n'}) 
         if ans=='y': 
             break 
         else: 

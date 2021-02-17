@@ -116,10 +116,24 @@ def main():
             break  
         # delete this part if you want
         else: 
-            print(f"Number of clips found: [{len(clip_list)}]") 
-            continue 
+            print(f"Number of clips found: [{len(clip_list)}]")  
             
         
+        
+        # change this part 
+        msg,mislabeled = Train_and_test_learner(learner=None, X=clip_list, Y=None, test_ratio=0.2) 
+        print(f"Printing out test result: ") 
+        print(short_line)
+        print(msg) 
+        
+        file_path = prompt_for_save_file(dir_path='mislabeled', f_format='.pkl') 
+        if file_path==None: 
+            continue
+        with open(file_path, 'wb') as f: 
+            pickle.dump(mislabeled, f) 
+        print(f"File saved as {file_path}") 
+        continue
+            
         
     return 
 
