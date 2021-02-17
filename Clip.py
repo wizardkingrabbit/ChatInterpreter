@@ -40,19 +40,28 @@ class clip_it():
     def __len__(self): 
         return len(self.chats) 
     
+    
+    def clip_info(self) -> str: # return clip labels as str 
+        ''' This function returns the varies labels of this clip, but not chat''' 
+        to_return = '' 
+        to_return += (f"true label is [{self.label}]: {self.available_labels[self.label]}" + os.linesep)
+        to_return += (f"true binary label is [{self.get_label_binary()}]" + os.linesep) 
+        to_return += (f"predicted label is [{self.pred_label}]: {self.available_labels[self.pred_label]}" + os.linesep) 
+        to_return += (f"predicted binary label is [{self.pred_binary_label}]" + os.linesep) 
+        return to_return
+    
+    
     def __str__(self) -> str: 
         to_return = ''
         for i in range(len(self)): 
             to_return += f'[{i}] [{time_to_str(self.time_stamps[i])}]: {self.chats[i]}' 
             to_return += os.linesep 
             
-        to_return += (f"true label is [{self.label}]: {self.available_labels[self.label]}" + os.linesep)
-        to_return += (f"true binary label is [{self.get_label_binary()}]" + os.linesep) 
-        to_return += (f"predicted label is [{self.pred_label}]: {self.available_labels[self.pred_label]}" + os.linesep) 
-        to_return += (f"predicted binary label is [{self.pred_binary_label}]" + os.linesep)
+        to_return += self.clip_info() 
             
         return to_return
     
+        
     def add_chat(self, T:float, chat:str): 
         assert T>=0.0 
         self.time_stamps.append(float(T)) 
@@ -66,7 +75,11 @@ class clip_it():
         to_return.end_time = float(self.end_time)
         to_return.label = int(self.label)
         to_return.chats = copy.deepcopy(self.chats) 
-        to_return.time_stamps = copy.deepcopy(self.time_stamps)
+        to_return.time_stamps = copy.deepcopy(self.time_stamps) 
+        try: to_return.pred_label = int(self.pred_label) 
+        except: pass 
+        try: to_return.pred_binary_label = int(self.pred_binary_label) 
+        except: pass 
         
         return to_return
         
