@@ -421,19 +421,7 @@ def Train_new_model_sequential(params=w2v_prms) -> gensim.models.KeyedVectors:
 
 def Save_wv(word_vector): 
     ''' This function takes a keyed word vector and store is with a series of prompts'''
-    ans = prompt_for_str('store word vector file? (y/n): ', options={'y','n'}) 
-    if ans=='n': 
-        return 
-    print('file will be stored as ./word_vectors/<YOUR FILE NAME>.kv')
-    while(True): 
-        ans = prompt_for_str('Enter file name (WITHOUT .kv): ') 
-        ans+='.kv' 
-        kv_path = os.path.join('word_vectors', ans) 
-        ans = prompt_for_str(f"file will be stored as {ans}, are you sure? (y/n): ", options={'y','n'}) 
-        if ans=='y': 
-            break 
-        else: 
-            continue 
+    kv_path = prompt_for_save_file(dir_path='word_vectors', f_format='.kv') 
     print(f"Saving file as {kv_path}")
     word_vector.save(kv_path) 
     print('File saved') 

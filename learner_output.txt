@@ -1,8 +1,10 @@
 terminal fter running learner.py: 
 
 ================= case 1 normal sequential ===================
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: s 
-> Enter file path (with .pkl), 'fin' to finish, 'e' to exit: file path 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
+> Enter here: s 
+> Enter file path (with .pkl), 'fin' to finish, 'e' to exit
+> Enter here: file path 
 > Enter file path, 'fin'.....: file path another 
 ..... 
 > Enter file path, 'fin'....: fin 
@@ -23,8 +25,10 @@ terminal fter running learner.py:
 
 
 ================== case 2 normal folder =====================
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: f 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
+> Enter here: f 
 > Enter folder path, 'e' to exit: folder path 
+> Number of files found: <int>
 > Enter testing fraction: 0.2 
 > # any other options special to learner: 
 > Printing out test result: 
@@ -38,30 +42,36 @@ terminal fter running learner.py:
 > File will be saved in folder ./mislabeled/<file name>
 > Enter your desired file name (without .pkl): XXXXX 
 > file saved as ./mislabeled/XXXXX.pkl 
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
 
 
 
 ================== case 3 sequential exit ====================
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: s 
-> Enter file path, 'fin' to finish, 'e' to exit: e 
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
+> Enter here: s 
+> Enter file path, 'fin' to finish, 'e' to exit
+> Enter here: e 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
 
 
 ================= case 4 sequential file error ======================
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: s 
-> Enter file path, 'fin' to finish, 'e' to exit: file path #error-some file path 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
+> Enter here: s 
+> Enter file path, 'fin' to finish, 'e' to exit
+> Enter here: file path #error-some file path 
 > Error: file entered invalid, enter again 
 > Enter file path, 'fin' to finish, 'e' to exit: 
 
 ================= case 5 folder exit ===============================
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: f 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
+> Enter here: f 
 > Enter folder path, 'e' to exit: e 
 > Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: 
 
 
 ================= case 6 folder error ============================== 
-> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?: f 
+> Do you want to train on folder 'f' or enter files sequentially 's' or exit 'e'?
+> Enter here: f 
 > Enter folder path, 'e' to exit: folder path #folder has invalid file 
 > Error: folder contains invalid file 
 > Enter folder path, 'e' to exit: 

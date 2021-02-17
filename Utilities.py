@@ -13,7 +13,7 @@ prompt_err_msg = 'invalid value entered, try again'
 
 
 
-def prompt_for_int(message:str, min_v=None, max_v=None) -> int: 
+def prompt_for_int(message:str, min_v=None, max_v=None) -> int: # prompt for int with message, within min and max 
     ''' prompt for integer input with passed message and do all error checking,
         also check for min and max value range, they are inclusive'''
     while(True): 
@@ -32,7 +32,7 @@ def prompt_for_int(message:str, min_v=None, max_v=None) -> int:
     return ans 
 
 
-def prompt_for_float(message:str, min_v=None, max_v=None) -> float: 
+def prompt_for_float(message:str, min_v=None, max_v=None) -> float: # prompt for a float with passed message between min and max 
     ''' prompt for float input with passed message and do all error checking,
         also check for min and max value range, they are inclusive'''
     while(True): 
@@ -51,7 +51,7 @@ def prompt_for_float(message:str, min_v=None, max_v=None) -> float:
     return ans 
 
 
-def prompt_for_str(message:str, options={}) -> str: 
+def prompt_for_str(message:str, options={}) -> str: # prompt for a string, if there are options, check if within options
     ''' prompt for a string and check if it is in the options, if options not specified, if is returned directly''' 
     while(True): 
         ans = input(message) 
@@ -64,7 +64,7 @@ def prompt_for_str(message:str, options={}) -> str:
     return ans 
 
 
-def prompt_for_file(message:str, exit_conds={}) -> str: 
+def prompt_for_file(message:str, exit_conds={}) -> str: # prompt for file path or exit conditions special str, check error  
     ''' prompt for a file path, exit upon entering exit condition string, do checking for validity''' 
     while(True):
         file_path = input(message) 
@@ -77,7 +77,43 @@ def prompt_for_file(message:str, exit_conds={}) -> str:
             return file_path   
 
 
-def time_to_str(time:float) -> str: 
+def prompt_for_dir(message:str, exit_conds={}) -> str: # prompt for dir path or exit when special str passed, check error 
+    ''' Takes a [message] string, set of str as exit conditions 
+        prompt for a directory path using message 
+        if one of the exit conds str is entered, returns that str 
+        keeps prompting until valid path or exit cond 
+        returns path once a valid path is entered''' 
+    while(True): 
+        dir_path = input(message) 
+        if dir_path in exit_conds: 
+            return dir_path 
+        elif not os.path.isdir(dir_path): 
+            print(f"dir path entered invalid, try again") 
+            continue 
+        else: 
+            return dir_path 
+        
+            
+def prompt_for_save_file(dir_path:str, f_format:str, ) -> str: # do a series of prompts for a path to save file
+    ''' Takes a directory path, a format string for file 
+        prompt for desired file name within that dir'''
+    ans = prompt_for_str('save file? (y/n): ', options={'y','n'}) 
+    if ans=='n': 
+        return None 
+    print(f"file will be stored as ./{dir_path}/<YOUR FILE NAME>{f_format}")
+    while(True): 
+        ans = prompt_for_str(f"Enter file name (WITHOUT {f_format}): ") 
+        ans+=f_format
+        file_path = os.path.join(dir_path, ans) 
+        ans = prompt_for_str(f"file will be stored as {ans}, are you sure? (y/n): ", options={'y','n'}) 
+        if ans=='y': 
+            break 
+        else: 
+            continue 
+    return file_path 
+
+
+def time_to_str(time:float) -> str: # turn a float time into hh:mm:ss formated string 
     ''' return a formated str of time in h:m:s'''
     time = int(time) 
     hours = time // 3600 
@@ -93,4 +129,5 @@ def Clip_chat_filter(chat:str, context:list) -> bool:
         returned value is bool''' 
         
     return True  
+
 

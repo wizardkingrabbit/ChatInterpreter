@@ -98,9 +98,8 @@ if __name__ == '__main__':
             break 
     
     if ans=='y': 
-        new_file_path = file_path[:-4:] 
-        new_file_path += '_labeled' 
-        new_file_path += '.pkl' 
+        dir_path = prompt_for_dir(f"Enter the folder to store this file: ")  
+        new_file_path = prompt_for_save_file(dir_path=dir_path, f_format='.pkl')  
         
         with open(new_file_path, 'wb') as f: 
             pickle.dump(labeled_list, f) 
