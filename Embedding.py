@@ -258,7 +258,9 @@ def Check_trained_model(word_vector):
         
         if len(tokens)==1: 
             top_k = prompt_for_int('How many similar words do you want to see?: ', min_v=1) 
+            ans = prompt_for_str("Do you want to see the vector? (y/n): ", options={'y','n'}) 
             word = tokens[0] 
+            if ans=='y': print(Vector_of(word_vector=word_vector, word=word))
             print(Most_similar_to(word_vector=word_vector, word=word, top_k=top_k)) 
         elif len(tokens)==2: 
             w1 = tokens[0] 
