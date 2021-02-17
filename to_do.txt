@@ -27,9 +27,9 @@ Before Feb/14/2021 [10:00]:
 [x] Duo Chen: finish making UI part of embedding 
 
 Before Feb/14/2021 [23:59]: 
-[] JingTian: research and implement learner module for bag of logistic regression BOW 
-[] Nate and Duo Chen: research and implement word embedding and (optionally) neural network-based learner 
-[] Nate and Duo Chen: refine tokenization
+[x] JingTian: research and implement learner module for bag of logistic regression BOW 
+[x] Nate and Duo Chen: research and implement word embedding and (optionally) neural network-based learner 
+[x] Nate and Duo Chen: refine tokenization
 [x] Duo Chen: find some vods of games from other category, such as horror game. 
 
 
