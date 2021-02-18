@@ -120,13 +120,15 @@ def main(method = None):
     validation_size = len(Y) - training_size
     #train the model
     if (method == "linear"):
-        classifier, t_err, v_err = log_regression.main(text, Y, training_size, validation_size)
+        classifier, t_err, v_err, t_msg, v_msg = log_regression.main(text, Y, training_size, validation_size)
     if (method == "RNN"):
         # call RNN method here
-        # classifier, t_err, v_err = ...
+        # classifier, t_err, v_err, t_msg, v_msg = ...
         pass
+    print(t_msg)
+    print(v_msg)
     #save the mislabeled
-    if (prompt_for_str("Do you want to save the mislabeled clips? (n/y) ") == "y"):
+    if (prompt_for_str("Do you want to save the mislabeled clips? (y/n) ") == "y"):
         if not os.path.isdir("/mislabeled"):
             os.mkdir("/mislabeled")
         file_prefix = prompt_for_str("Please name the prefix of saved files: ")

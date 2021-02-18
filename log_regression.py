@@ -25,27 +25,28 @@ warnings.filterwarnings(action='ignore')
 # nltk.download('stopwords') is needed
 # the following functions are from HW1, with some modification.
 def logistic_classification(X, Y, classifier = None):
+	msg_line = ""
 	if (classifier == None):
 		mode = "Training"
-		print('Number of training examples: ', X.shape[0])
-		print('Vocabulary size: ', X.shape[1])
+		msg_line += f"Number of training examples: [{X.shape[0]}]" + os.linesep
+		msg_line += f"Vocabulary size: [{X.shape[1]}]" + os.linesep
 		classifier = linear_model.LogisticRegression(penalty = 'l2', fit_intercept = True)
 		classifier.fit(X, Y)
 	else:
 		mode = "Validation/Testing"
 	accuracy = classifier.score(X, Y)
-	print(mode + ' accuracy:',format( 100*accuracy , '.2f'))
+	msg_line += mode + f" accuracy: [{format( 100*accuracy , '.2f')}]" + os.linesep
 	train_predictions = classifier.predict(X)
 	class_probabilities = classifier.predict_proba(X)
 	test_auc_score = sklearn.metrics.roc_auc_score(Y, class_probabilities[:,1])
-	print(mode + ' AUC value:', format( 100*test_auc_score , '.2f') )
+	msg_line += mode + f" AUC value: [{format( 100*test_auc_score , '.2f')}]" + os.linesep
 	counter = 0
 	my_error = []
 	while (counter < X.shape[0]):
 		if (train_predictions[counter] != Y[counter]):
 			my_error.append(counter)
 		counter += 1
-	return classifier, my_error
+	return classifier, my_error, msg_line
 
 def most_significant_terms(classifier, vectorizer, K):
 	count = 0
@@ -106,12 +107,12 @@ def main(the_text = None, the_y = None, t_size = None, v_size = None):
 	else:
 		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01)
 	X = vect.fit_transform(the_text)
-	classifier, t_err = logistic_classification(X[:t_size], the_y[:t_size])
-	_c, v_err = logistic_classification(X[t_size:], the_y[t_size:], classifier)
+	classifier, t_err, t_msg = logistic_classification(X[:t_size], the_y[:t_size])
+	_c, v_err, v_msg = logistic_classification(X[t_size:], the_y[t_size:], classifier)
 	# look at result
 	if (input("enter y to look at top 5 significant terms, enter other to quit") == "y"):
 		most_significant_terms(classifier, vect, 5)
-	return classifier, t_err, v_err
+	return classifier, t_err, v_err, t_msg, v_msg
 
 if __name__ == "__main__":
     main()
