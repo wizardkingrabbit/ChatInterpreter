@@ -16,7 +16,7 @@ Before Feb/19/2021 [23:59]:
 
 
 Before Feb/18/2021 [23:59]: 
-[] Jint Tian: modify log_regression code to learner specification
+[] Jintian: modify log_regression code to learner specification
 
 
 Before Feb/21/2021 [23:59]: 
@@ -50,6 +50,6 @@ Before Feb/5/2021 [12:30]:
 
 Before Feb/7/2021 [23:59]: 
 [x] Duo Chen: label at least 150 clips from streamer
-[] JingTian Li: label at least 150 clips from streamer
+[x] JingTian Li: label at least 150 clips from streamer
 [x] Nate: label at least 150 clips from streamer 
 

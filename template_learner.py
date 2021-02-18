@@ -67,7 +67,76 @@ def main():
         
     return 
 
+def main_alter(method = None): 
+    # main function, a sequence of supportive methods defined above 
+    # see specifications in learner_output.txt \
+    # one good practice is to keep indent within a function no more than 3
+    # if more loop like structures are needed, another defined method is recommended
 
+    # define method
+    if method == None:
+        method = prompt_for_str("which method to use? (linear/RNN)", {"linear", "RNN"})
+    #define training set
+    all_clip = []
+    filepath = []
+    file_or_folder, _type = prompt_for_file("enter a path to a file or a folder to add that to the training set, enter e to exit", {"e"}, True)
+    while(file_or_folder != "e"):
+        filepath = add_to_set(file_or_folder, _type == "file", filepath)
+        file_or_folder, _type = prompt_for_file("enter a path to a file or a folder to add that to the training set, enter e to exit", {"e"}, True)
+    text = []
+    Y = []
+    for filename in filepath:
+        the_file = open(filename, 'rb')
+        the_pkl = pickle.load(the_file)
+        for clip in the_pkl:
+            all_clip.append(clip)
+            text.append(Concatenate_str_list(clip.chats))
+            if (clip.get_label_binary() == 0):
+                Y.append(0)
+            else:
+                Y.append(1)
+        the_file.close()
+    training_size = len(Y)
+    #define validation set
+    file_or_folder, _type = prompt_for_file("enter a path to a file or a folder to add that to the validation set, enter e to exit", {"e"}, True)
+    while(file_or_folder != "e"):
+        filepath = add_to_set(file_or_folder, _type == "file", filepath)
+        file_or_folder, _type = prompt_for_file("enter a path to a file or a folder to add that to the validation set, enter e to exit", {"e"}, True)
+    for filename in filepath:
+        the_file = open(filename, 'rb')
+        the_pkl = pickle.load(the_file)
+        for clip in the_pkl:
+            all_clip.append(clip)
+            text.append(Concatenate_str_list(clip.chats))
+            if (clip.get_label_binary() == 0):
+                Y.append(0)
+            else:
+                Y.append(1)
+        the_file.close()
+    validation_size = len(Y) - training_size
+    #train the model
+    if (method == "linear"):
+        classifier, t_err, v_err = log_regression.main(text, Y, training_size, validation_size)
+    #save the mislabeled
+    if (prompt_for_str("Do you want to save the mislabeled clips? (n/y) ") == "y"):
+        if not os.path.isdir("/mislabeled"):
+            os.mkdir("/mislabeled")
+        file_prefix = prompt_for_str("Please name the prefix of saved files: ")
+        # making mislabeled file for training errors
+        err_list = list()
+        for err_id in t_err:
+            err_list.append(all_clip[err_id])
+        new_file_path = 'mislabeled/' + file_prefix + '_mislabeled_train.pkl' 
+        with open(new_file_path, 'wb') as f: 
+            pickle.dump(err_list, f)
+        # making mislabeled file for validation errors
+        err_list = list()
+        for err_id in v_err:
+            err_list.append(all_clip[err_id + training_size])
+        new_file_path = 'mislabeled/' + file_prefix + '_mislabeled_validation.pkl' 
+        with open(new_file_path, 'wb') as f: 
+            pickle.dump(err_list, f)
+    return 
 
 # ====================================== user prompts =============================================== 
 
