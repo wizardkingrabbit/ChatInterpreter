@@ -13,7 +13,7 @@ import re
 
 nltk_stop_words = set(stopwords.words('english'))
 
-# =============================== small methods/tools ==================================================================== 
+# =============================== small methods/tools ==========================================================================
 
 def Default_word_filter(word:str) -> bool: 
     ''' by default, every word is counted'''
@@ -46,9 +46,8 @@ def BOW_to_str(bow:dict, freq_order=True, top_k=-1, indent='') -> str:
     return to_return
     
 
-# ================================= methods to make long string from collections =======================
-
-
+'''============================================== methods to make long string from collections ================================================'''
+# concate a list of string into a long string 
 def Concatenate_str_list(str_list:list, random_order=False, splitter=os.linesep) -> str: 
     ''' This function take a list of string, concatenate them into a long string 
         random order means items are concatenated in random order 
@@ -66,9 +65,8 @@ def Concatenate_str_list(str_list:list, random_order=False, splitter=os.linesep)
             to_return += splitter  
         return to_return 
     
-    
 
-# =============================== this part is for methods long strings into lists ==============================================
+'''=============================== this part is for methods long strings into lists ============================================================'''
 # simple tokenizer using nltk
 def Simple_tokenizer(long_string:str, remove_stop_words=True, stop_words=nltk_stop_words, case_sensitive=False) -> list: 
     ''' This module tokenize a long string, tokenize by white space, retaining marks such as question marks
@@ -94,7 +92,7 @@ def Default_tokenizer(long_string:str, stopwords={}, min_len=1) -> list:
     return [i for i in long_string.split() if not((i in stopwords) or (len(i)<min_len))] 
 
 
-#========== Embedding tokenizer 
+#--------------------- Embedding tokenizer -------------------------------------------
 embd_stop_words = set(nltk_stop_words) 
 # modify word to account for word variations
 def Embedding_word_modifier(word:str, stop_words = embd_stop_words) -> str: 
@@ -211,8 +209,7 @@ def Embedding_tokenize(sentence:str, word_filter=Embedding_word_modifier, case_s
     return to_return 
 
 
-
-# ================================ methods for processing list of tokens into BOW (sets, dicts, etc) ============================
+'''================================ methods for processing list of tokens into BOW (sets, dicts, etc) ============================================='''
 
 def List_to_bow(token_list:list, filter_func=Default_word_filter, modifier_func=Default_word_modifier, n_gram=1, connector=''): 
     ''' takes a list of tokens, make them into a bag of words based on some conditions 
