@@ -108,15 +108,17 @@ def main(method = None):
         file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the training set, enter e to exit", {"e"})
     for filename in filepath:
         all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, filename)
-    training_size = len(Y)
     #define validation set
-    filepath = []
-    file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the validation set, enter e to exit", {"e"})
-    while(file_or_folder != "e"):
-        filepath = add_filepath_to_set(file_or_folder, _type == "file", filepath)
-        file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the validation set, enter e to exit", {"e"})
-    for filename in filepath:
-        all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, filename)
+    #filepath = []
+    #file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the validation set, enter e to exit", {"e"})
+    #while(file_or_folder != "e"):
+    #    filepath = add_filepath_to_set(file_or_folder, _type == "file", filepath)
+    #    file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the validation set, enter e to exit", {"e"})
+    #for filename in filepath:
+    #    all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, filename)
+    #validation_size = len(Y) - training_size
+    validation_ratio = prompt_for_float("What proportion of the training data would be used for validation?", 0, 1)
+    training_size = int(len(Y) * (1 - validation_ratio))
     validation_size = len(Y) - training_size
     #train the model
     if (method == "linear"):
@@ -146,8 +148,31 @@ def main(method = None):
         new_file_path = 'mislabeled/' + file_prefix + '_mislabeled_validation.pkl' 
         with open(new_file_path, 'wb') as f: 
             pickle.dump(err_list, f)
+    # test the classifier
+    training_size = len(Y)
     while (input("Do you want to test this classifier on any unlabled clip data? (y/n)") == "y"):
-        pass # to be done
+        all_clip = []
+        Y = Y[training_size:]
+        text = text[training_size:]
+        file_path = prompt_for_file("which file you want to do test on? ")
+        if_answer = input("Is this file labeled? (y/n)") == "y"
+        all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, file_path)
+        if (method == "linear"):
+            classifier, t_err, v_err, t_msg, v_msg = log_regression.main(text, Y, training_size, len(Y) - training_size, if_answer)
+        if (method == "RNN"):
+            # call RNN method here
+            # classifier, t_err, v_err, t_msg, v_msg = ...
+            pass
+        if if_answer:
+            print(v_msg)
+        else:
+            counter = 0
+            while(counter < len(all_clip)):
+                all_clip[counter].labeled = v_msg[counter]
+                counter += 1
+            file_path = prompt_for_save_file(dir_path='model_labeled_result', f_format='.pkl')
+            with open(file_path, 'wb') as f: 
+                pickle.dump(all_clip, f)
     return 
 
 # ====================================== user prompts =============================================== 

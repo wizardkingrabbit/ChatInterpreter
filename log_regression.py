@@ -23,7 +23,7 @@ import warnings
 warnings.filterwarnings(action='ignore')
 
 # nltk.download('stopwords') is needed
-# the following functions are from HW1, with some modification.
+# the following 2 functions are from HW1, with some modification.
 def logistic_classification(X, Y, classifier = None):
 	msg_line = ""
 	if (classifier == None):
@@ -40,6 +40,8 @@ def logistic_classification(X, Y, classifier = None):
 	class_probabilities = classifier.predict_proba(X)
 	test_auc_score = sklearn.metrics.roc_auc_score(Y, class_probabilities[:,1])
 	msg_line += mode + f" AUC value: [{format( 100*test_auc_score , '.2f')}]" + os.linesep
+	default_accuracy = classifier.score(X, np.zeros(len(Y)))
+	msg_line += f" default accuracy: [{format( 100*default_accuracy , '.2f')}]" + os.linesep
 	counter = 0
 	my_error = []
 	while (counter < X.shape[0]):
@@ -87,10 +89,16 @@ def most_significant_terms(classifier, vectorizer, K):
 		count += 1
 	return(topK_pos_weights, topK_neg_weights, topK_pos_terms, topK_neg_terms)
 
-def main(the_text = None, the_y = None, t_size = None, v_size = None):
+# process test data
+def predict_test(classifier, train_text, test_text, answer_label = None):
+	stop_words = {}
+
+
+# main
+def main(the_text = None, the_y = None, t_size = None, v_size = None, test_has_answer = True):
 	# use the template learner for first few steps
 	if (the_text == None):
-		template_learner.main_alter("linear")
+		template_learner.main("linear")
 	# define stop word
 	if_stop = Utilities.prompt_for_str("Do you want to use default english stopwords or stopwords given by my author? (default/author)", {"default","author"})
 	special_stop_word = None
@@ -98,21 +106,27 @@ def main(the_text = None, the_y = None, t_size = None, v_size = None):
 		pass
 	if (if_stop == "author"):
 		special_stop_word = {"1", "2", "11", "111111", "gg", "gg gg", "LUL", "LOL"}
-	#concat_str = Tokenizer_kit.Concatenate_str_list(text)
-	#token_list = Tokenizer_kit.Simple_tokenizer(concat_str)
-	#the_bow = Tokenizer_kit.List_to_bow(token_list)
 	# construct the vectorizer
 	if (special_stop_word == None):
 		vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01)
 	else:
 		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01)
 	X = vect.fit_transform(the_text)
+	# make classifier
 	classifier, t_err, t_msg = logistic_classification(X[:t_size], the_y[:t_size])
-	_c, v_err, v_msg = logistic_classification(X[t_size:], the_y[t_size:], classifier)
+	if test_has_answer:
+		_c, v_err, v_msg = logistic_classification(X[t_size:], the_y[t_size:], classifier)
 	# look at result
 	if (input("enter y to look at top 5 significant terms, enter other to quit") == "y"):
 		most_significant_terms(classifier, vect, 5)
-	return classifier, t_err, v_err, t_msg, v_msg
+	# return the msg or the labeled clip list
+	# whem the validation/test data have answer
+	if test_has_answer:
+		return classifier, t_err, v_err, t_msg, v_msg
+	# when users do not have answer and want to get answer from the model
+	else:
+		v_msg = classifier.predict(X[t_size:])
+		return classifier, t_err, "not valid", t_msg, v_msg
 
 if __name__ == "__main__":
     main()
