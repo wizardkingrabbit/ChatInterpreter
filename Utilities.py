@@ -64,7 +64,20 @@ def prompt_for_str(message:str, options={}) -> str: # prompt for a string, if th
     return ans 
 
 
-def prompt_for_file(message:str, exit_conds={}) -> str: # prompt for file path or exit conditions special str, check error  
+def prompt_for_file_folder(message:str, exit_conds={}) -> str: # prompt for file path or exit conditions special str, check error  
+    ''' prompt for either file or folder, returns path, type (folder/file)''' 
+    while(True):
+        file_path = input(message) 
+        if file_path in exit_conds:
+            return file_path, "exit_conds"
+        elif os.path.isdir(file_path):
+            return file_path, "folder"
+        elif os.path.isfile(file_path):
+            return file_path, "file"
+        else:
+            print("invalid path, please enter again")
+
+def prompt_for_file(message:str, exit_conds={}) -> str: # prompt for file path or exit conditions special str, check error
     ''' prompt for a file path, exit upon entering exit condition string, do checking for validity''' 
     while(True):
         file_path = input(message) 
@@ -74,8 +87,7 @@ def prompt_for_file(message:str, exit_conds={}) -> str: # prompt for file path o
             print('file path entered invalid, try again') 
             continue 
         else: 
-            return file_path   
-
+            return file_path
 
 def prompt_for_dir(message:str, exit_conds={}) -> str: # prompt for dir path or exit when special str passed, check error 
     ''' Takes a [message] string, set of str as exit conditions 

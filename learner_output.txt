@@ -76,3 +76,21 @@ terminal fter running learner.py:
 > Error: folder contains invalid file 
 > Enter folder path, 'e' to exit: 
 
+================= version b standard output ==============================
+> which method to use? (linear/RNN)linear
+> enter a path to a file or a folder to add that to the training set, enter e to exit labeled_clip_data
+> enter a path to a file or a folder to add that to the training set, enter e to exit e
+> enter a path to a file or a folder to add that to the validation set, enter e to exit Teo_labeled
+> enter a path to a file or a folder to add that to the validation set, enter e to exit e
+### following lines are specific to logistic regression ###
+> Do you want to use default english stopwords or stopwords given by my author? (default/author) default
+> enter y to look at top 5 significant terms, enter other to quit n
+### end of logistic regression ###
+> Number of training examples:  651
+> Vocabulary size:  2274
+> Training accuracy: 99.85
+> Training AUC value: 100.00
+> Validation/Testing accuracy: 100.00
+> Validation/Testing AUC value: 100.00
+> Do you want to save the mislabeled clips? (n/y) n
+> Do you want to test this classifier on any unlabled clip data? (y/n) n

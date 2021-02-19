@@ -17,37 +17,36 @@ import pickle
 import Utilities
 import Tokenizer_kit
 import os
+import template_learner
 
 import warnings 
 warnings.filterwarnings(action='ignore')
 
 # nltk.download('stopwords') is needed
 # the following functions are from HW1, with some modification.
-    
-def logistic_classification(X, Y, test_fraction):
-	if (test_fraction == 0):
+def logistic_classification(X, Y, classifier = None):
+	msg_line = ""
+	if (classifier == None):
+		mode = "Training"
+		msg_line += f"Number of training examples: [{X.shape[0]}]" + os.linesep
+		msg_line += f"Vocabulary size: [{X.shape[1]}]" + os.linesep
 		classifier = linear_model.LogisticRegression(penalty = 'l2', fit_intercept = True)
 		classifier.fit(X, Y)
-		return(classifier)
-	X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=test_fraction, random_state=42)
-	print('Number of training examples: ', X_train.shape[0])
-	print('Number of testing examples: ', X_test.shape[0])   
-	print('Vocabulary size: ', X_train.shape[1])
-	classifier = linear_model.LogisticRegression(penalty = 'l2', fit_intercept = True)
-	print('\nTraining a model with', X_train.shape[0], 'examples.....')
-	classifier.fit(X_train, Y_train)
-	train_predictions = classifier.predict(X_train)
-	train_accuracy = classifier.score(X_train, Y_train)
-	print('\nTraining:')
-	print(' accuracy:',format( 100*train_accuracy , '.2f'))
-	print('\nTesting: ')
-	test_predictions = classifier.predict(X_test)
-	test_accuracy = classifier.score(X_test, Y_test)
-	print(' accuracy:', format( 100*test_accuracy , '.2f') )
-	class_probabilities = classifier.predict_proba(X_test)
-	test_auc_score = sklearn.metrics.roc_auc_score(Y_test, class_probabilities[:,1])
-	print(' AUC value:', format( 100*test_auc_score , '.2f') )
-	return(classifier)
+	else:
+		mode = "Validation/Testing"
+	accuracy = classifier.score(X, Y)
+	msg_line += mode + f" accuracy: [{format( 100*accuracy , '.2f')}]" + os.linesep
+	train_predictions = classifier.predict(X)
+	class_probabilities = classifier.predict_proba(X)
+	test_auc_score = sklearn.metrics.roc_auc_score(Y, class_probabilities[:,1])
+	msg_line += mode + f" AUC value: [{format( 100*test_auc_score , '.2f')}]" + os.linesep
+	counter = 0
+	my_error = []
+	while (counter < X.shape[0]):
+		if (train_predictions[counter] != Y[counter]):
+			my_error.append(counter)
+		counter += 1
+	return classifier, my_error, msg_line
 
 def most_significant_terms(classifier, vectorizer, K):
 	count = 0
@@ -88,91 +87,32 @@ def most_significant_terms(classifier, vectorizer, K):
 		count += 1
 	return(topK_pos_weights, topK_neg_weights, topK_pos_terms, topK_neg_terms)
 
-def main():
-	run_mode = Utilities.prompt_for_str("Classifier based on all labeled files or a single file? (all/single)", {"all", "single"})
-	if_stop = Utilities.prompt_for_str("Should I use defualt stop words or stop words built by my author? (default/author)", {"default", "author"})
-
+def main(the_text = None, the_y = None, t_size = None, v_size = None):
+	# use the template learner for first few steps
+	if (the_text == None):
+		template_learner.main_alter("linear")
+	# define stop word
+	if_stop = Utilities.prompt_for_str("Do you want to use default english stopwords or stopwords given by my author? (default/author)", {"default","author"})
 	special_stop_word = None
 	if (if_stop == "default"):
 		pass
 	if (if_stop == "author"):
-		special_stop_word = {"1", "2", "11", "111111"}
-
-	if (run_mode == "all"):
-		test_frac = Utilities.prompt_for_float("Test fraction is ", 0, 1)
-		text = []
-		Y = []
-		for filename in os.listdir("labeled_clip_data"):
-			the_file = open("labeled_clip_data/" + filename, 'rb')
-			the_pkl = pickle.load(the_file)
-			for clip in the_pkl:
-				text.append(Tokenizer_kit.Concatenate_str_list(clip.chats))
-				if (clip.get_label_binary() == 0):
-					Y.append(0)
-				else:
-					Y.append(1)
-
-		concat_str = Tokenizer_kit.Concatenate_str_list(text)
-		token_list = Tokenizer_kit.Simple_tokenizer(concat_str)
-		the_bow = Tokenizer_kit.List_to_bow(token_list)
-
-		if (special_stop_word == None):
-			vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01)
-		else:
-			vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01)
-		X = vect.fit_transform(text)
-		classifier = logistic_classification(X, Y, test_frac)
-
-	if (run_mode == "single"):
-		text = []
-		Y = []
-		train_file_path = Utilities.prompt_for_file("which labeled file you want to use?")
-		the_file = open(train_file_path, 'rb')
-		the_pkl = pickle.load(the_file)
-		for clip in the_pkl:
-			text.append(Tokenizer_kit.Concatenate_str_list(clip.chats))
-			if (clip.get_label_binary() == 0):
-				Y.append(0)
-			else:
-				Y.append(1)
-		concat_str = Tokenizer_kit.Concatenate_str_list(text)
-		token_list = Tokenizer_kit.Simple_tokenizer(concat_str)
-		the_bow = Tokenizer_kit.List_to_bow(token_list)
-		if (special_stop_word == None):
-			vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01)
-		else:
-			vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01)
-		X = vect.fit_transform(text)
-		classifier = logistic_classification(X, Y, 0)
-
-		while (input("enter y to test the classifier against another labeled file, enter other to quit") == "y"):
-			# this feature is not finished!
-			# how can I use a classifier built according to one word set on another word set
-			text = []
-			Y = []
-			test_file_path = Utilities.prompt_for_file("which labeled file you want to use?")
-			the_file = open(test_file_path, 'rb')
-			the_pkl = pickle.load(the_file)
-			for clip in the_pkl:
-				text.append(Tokenizer_kit.Concatenate_str_list(clip.chats))
-				if (clip.get_label_binary() == 0):
-					Y.append(0)
-				else:
-					Y.append(1)
-			concat_str = Tokenizer_kit.Concatenate_str_list(text)
-			token_list = Tokenizer_kit.Simple_tokenizer(concat_str)
-			the_bow = Tokenizer_kit.List_to_bow(token_list)
-			if (special_stop_word == None):
-				vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01)
-			else:
-				vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01)
-			X = vect.fit_transform(text)
-			test_accuracy = classifier.score(X, Y)
-			print("the test accuracy is " + str(test_accuracy))
-
+		special_stop_word = {"1", "2", "11", "111111", "gg", "gg gg", "LUL", "LOL"}
+	#concat_str = Tokenizer_kit.Concatenate_str_list(text)
+	#token_list = Tokenizer_kit.Simple_tokenizer(concat_str)
+	#the_bow = Tokenizer_kit.List_to_bow(token_list)
+	# construct the vectorizer
+	if (special_stop_word == None):
+		vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01)
+	else:
+		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01)
+	X = vect.fit_transform(the_text)
+	classifier, t_err, t_msg = logistic_classification(X[:t_size], the_y[:t_size])
+	_c, v_err, v_msg = logistic_classification(X[t_size:], the_y[t_size:], classifier)
+	# look at result
 	if (input("enter y to look at top 5 significant terms, enter other to quit") == "y"):
 		most_significant_terms(classifier, vect, 5)
-	return
+	return classifier, t_err, v_err, t_msg, v_msg
 
 if __name__ == "__main__":
     main()
