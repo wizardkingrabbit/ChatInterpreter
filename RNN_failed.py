@@ -4,14 +4,11 @@
 
 
 # import all you need
-import os 
 from Utilities import * 
 from Clip import * 
 from Tokenizer_kit import * 
 import pickle 
 from Data_loader import * 
-from io import open
-import glob
 import torch
 import os
 import random
@@ -166,6 +163,7 @@ class RNN(nn.Module):
         # Put the computation for the forward pass here
         # combined is both the input and hidden, compute it so it do not have to be computed twice 
         combined = torch.cat((input.double(), hidden.double()))
+		
         output = self.soft_max(self.i2o(combined)) 
         hidden = self.i2h(combined)
 
