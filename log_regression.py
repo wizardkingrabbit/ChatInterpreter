@@ -18,6 +18,7 @@ import Utilities
 import Tokenizer_kit
 import os
 import template_learner
+import Embedding
 
 import warnings 
 warnings.filterwarnings(action='ignore')
@@ -30,7 +31,7 @@ def logistic_classification(X, Y, classifier = None):
 		mode = "Training"
 		msg_line += f"Number of training examples: [{X.shape[0]}]" + os.linesep
 		msg_line += f"Vocabulary size: [{X.shape[1]}]" + os.linesep
-		classifier = linear_model.LogisticRegression(penalty = 'l2', fit_intercept = True)
+		classifier = linear_model.LogisticRegression(penalty = 'l2', fit_intercept = False, tol = 0.01, solver = "sag", random_state = 1)
 		classifier.fit(X, Y)
 	else:
 		mode = "Validation/Testing"
@@ -108,9 +109,9 @@ def main(the_text = None, the_y = None, t_size = None, v_size = None, test_has_a
 		special_stop_word = {"1", "2", "11", "111111", "gg", "gg gg", "LUL", "LOL"}
 	# construct the vectorizer
 	if (special_stop_word == None):
-		vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01)
+		vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01, tokenizer = Embedding.Embedding_tokenize)
 	else:
-		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01)
+		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01,  tokenizer = Embedding.Embedding_tokenize)
 	X = vect.fit_transform(the_text)
 	# make classifier
 	classifier, t_err, t_msg = logistic_classification(X[:t_size], the_y[:t_size])
