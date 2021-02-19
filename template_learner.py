@@ -115,7 +115,7 @@ def main(method = None):
     #    filepath = add_filepath_to_set(file_or_folder, _type == "file", filepath)
     #    file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the validation set, enter e to exit", {"e"})
     #for filename in filepath:
-    #    all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, filename)
+    #    all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, filename) 
     #validation_size = len(Y) - training_size
     validation_ratio = prompt_for_float("What proportion of the training data would be used for validation?", 0, 1)
     training_size = int(len(Y) * (1 - validation_ratio))
