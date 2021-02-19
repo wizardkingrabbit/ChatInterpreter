@@ -4,7 +4,6 @@
 
 
 # import all you need
-from __future__ import unicode_literals, print_function, division
 import os 
 from Utilities import * 
 from Clip import * 
@@ -28,16 +27,26 @@ import gensim
 import warnings 
 warnings.filterwarnings(action='ignore') 
 
-# ======================================= objects and methods ======================================= 
 
+device = torch.device('cpu')
+# ======================================= objects and methods ======================================= 
+rnn_params={'kv':None, 
+            'chat_window':1, 
+            'overlap':0,
+            'n_epochs':5,
+            'learning_rate':0.005, 
+            'binary':True, 
+            'test_ratio':0.25, 
+            'hidden_size':128, 
+            }
 
 # this function compute sigmoid gradient 
 def Compute_sigmod_grad(v): 
-	x = torch.tensor(v, requires_grad=True, dtype=torch.float) 
-	y = 1/(1 + torch.exp(-x)) 
-	y.backward()
-	print(x.grad)
-	return x.grad
+    x = torch.tensor(v, requires_grad=True, dtype=torch.float) 
+    y = 1/(1 + torch.exp(-x)) 
+    y.backward()
+    print(x.grad)
+    return x.grad
 
 
 # turn a word into numpy vector
@@ -47,6 +56,7 @@ def Word_to_vector(word:str, kv:gensim.models.KeyedVectors) -> np.ndarray:
     if type(vector)!=np.ndarray: 
         return np.zeros(kv.vector_size, dtype=float) 
     return vector
+    
     
 # compute magnitude of vector 
 def Mag_of(vector:np.ndarray): 
@@ -67,6 +77,7 @@ def List_to_vector(word_list:list, kv:gensim.models.KeyedVectors) -> np.ndarray:
     assert len(word_list)>0, "Cannot vectorize empty list"
     for word in word_list: 
         vector = vector + Word_to_vector(word, kv) 
+        vector = np.array(vector, dtype=np.double)
     return Normalize_vector(vector=vector) 
 
 
@@ -76,7 +87,7 @@ def Sentence_to_vector(sentence:str, kv:gensim.models.KeyedVectors) -> np.ndarra
     assert len(sentence)>0, "passed an empty sentence" 
     word_list = Embedding_tokenize(sentence=sentence) 
     if len(word_list)==0: 
-        return np.zeros(kv.vector_size, dtype=float) 
+        return np.zeros(kv.vector_size, dtype=np.double) 
     vector = List_to_vector(word_list=word_list, kv=kv) 
     return vector 
     
@@ -99,80 +110,262 @@ def Clip_to_sentences(clip:clip_it, chat_window=1, overlap=0) -> list:
         
 
 # Turn a clip object into numpy vector
-def Clip_to_vector_sequential(clip:clip_it, 
-                              kv:gensim.models.KeyedVectors, 
-                              chat_window=1, 
-                              overlap=0) -> np.ndarray:  
-    
+def Clip_to_vector_sequential(clip_converter:dict, clip:clip_it) -> np.ndarray:  
     ''' Turns a clip into a 2D array of vectors 
         chat window is how many chat to be considered a sentence''' 
+    kv = clip_converter['kv'] 
+    assert type(kv)==gensim.models.KeyedVectors, "passed kv not valid"
+    chat_window = clip_converter['chat_window'] 
+    overlap = clip_converter['overlap'] 
     sentence_list = Clip_to_sentences(clip=clip, chat_window=chat_window, overlap=overlap) 
     #print(f"vectorizing sentence [{sentence_list[0]}]")
     to_return = Sentence_to_vector(sentence=sentence_list[0], kv=kv) 
+    if len(sentence_list)==1: 
+        to_return = np.transpose(to_return)
     for s in sentence_list[1:]: 
         #print(f"vectorizing sentence [{s}]")
         to_return = np.vstack( (to_return,Sentence_to_vector(sentence=s, kv=kv)) ) 
     return to_return 
     
 
+# turn clip label into a vector
+def Clip_to_category_vector(clip:clip_it, binary=rnn_params['binary']) -> np.ndarray: 
+    if binary: 
+        label = clip.get_label_binary() 
+        if label!=0: 
+            return np.array([0,1], dtype=float) 
+        else: 
+            return np.array([1,0], dtype=float) 
+    else: 
+        label = clip.get_label() 
+        to_return = np.zeros(len(clip.available_labels), dtype=float) 
+        to_return[label]=1.0 
+        return to_return
+
+
+# turn a category vector into label int 
+def Category_tensor_to_label(vector:torch.Tensor) -> int: 
+    ''' This function takes a tensor vector and convert it to a label integer''' 
+    for i in range(len(vector)): 
+        if vector[i].item()==1: 
+            return i 
+
+
+# deep rnn, default number of layers is 1
 class RNN(nn.Module):
-	def __init__(self, input_size, hidden_size, output_size):
-		super(RNN, self).__init__()
-
-		# Put the declaration of the RNN network here
-		self.hidden_size = hidden_size 
-		self.i2o = nn.Linear(input_size + hidden_size, output_size) 
-		self.i2h = nn.Linear(input_size + hidden_size, hidden_size) 
-		self.soft_max = nn.LogSoftmax(dim=1) 
-
-	def forward(self, input, hidden):
-		# Put the computation for the forward pass here
-		# combined is both the input and hidden, compute it so it do not have to be computed twice
-		combined = torch.cat((input, hidden), dim=1)
-		output = self.soft_max(self.i2o(combined)) 
-		hidden = self.i2h(combined)
-
-		return output, hidden
-
-	def initHidden(self):
-		return torch.zeros(1, self.hidden_size)
+    def __init__(self, input_size:int, hidden_size:int, output_size:int):
+        super(RNN, self).__init__() 
+        self.hidden_size = hidden_size 
+        self.input_size = input_size 
+        self.i2o = nn.Linear(input_size + hidden_size, output_size) 
+        self.i2h = nn.Linear(input_size + hidden_size, hidden_size) 
+        self.soft_max = nn.LogSoftmax(dim=1) 
 
 
-def Train_and_test_learner(learner, X:list, Y, test_ratio:float) -> tuple: # train the passed learner and return filed cases 
+    def forward(self, input, hidden):
+        # Put the computation for the forward pass here
+        # combined is both the input and hidden, compute it so it do not have to be computed twice 
+        combined = torch.cat((input.double(), hidden.double()))
+        output = self.soft_max(self.i2o(combined)) 
+        hidden = self.i2h(combined)
+
+        return output, hidden
+
+    def initHidden(self):
+        return torch.zeros(self.hidden_size)
+
+
+def Train_iter_rnn(rnn:RNN, category_tensor:torch.Tensor, sentences_tensor:torch.Tensor, learning_rate=rnn_params['learning_rate']):   
+    ''' train the passed rnn module on a category tensor and sentences tensor''' 
+    assert sentences_tensor.size()[1] == rnn.input_size, "Different size of input"
+    criterion = nn.NLLLoss()
+    hidden = rnn.initHidden()
+    rnn.zero_grad() 
+    
+    for i in range(sentences_tensor.size()[0]):
+        output, hidden = rnn(sentences_tensor[i], hidden) 
+
+    loss = criterion(output, category_tensor) 
+    loss.backward() 
+    
+    for p in rnn.parameters():
+        p.data.add_(p.grad.data, alpha=-learning_rate) 
+
+    return output, loss.item() 
+
+
+# train passed rnn with passed clip 
+def Train_rnn_on_clip(rnn:RNN, 
+                clip:clip_it, 
+                clip_converter=rnn_params,
+                learning_rate=rnn_params['learning_rate'], 
+                binary=rnn_params['binary']): 
+    ''' train passed rnn on a clip, do clip processing itself with passed params'''
+    sentences_vector = Clip_to_vector_sequential(clip_converter=clip_converter, clip=clip) 
+    label_vector = Clip_to_category_vector(clip=clip, binary=binary) 
+    sentences_tensor = torch.from_numpy(sentences_vector).double()
+    category_tensor = torch.from_numpy(label_vector).double()
+    return Train_iter_rnn(rnn=rnn, category_tensor=category_tensor, sentences_tensor=sentences_tensor, learning_rate=learning_rate) 
+    
+
+# returns the time since passed value in formated string
+def Time_since(since): 
+    now = time.time()
+    s = now - since
+    m = math.floor(s / 60)
+    s -= m * 60 
+    return f"[{m}m:{s}s]"
+
+
+# print a message every specified number of times
+def Print_every(n:int, every:int, message:str): 
+    if n % every == 0: 
+        print(f"Trained number of clips: [{n}]") 
+        print(message) 
+    return 
+
+
+# train an rnn using passed clip list 
+def Train_rnn(clip_list:list, rnn:RNN, params=rnn_params) -> RNN: 
+    ''' train passed rnn on passed clip list using specified params
+        return trained rnn object''' 
+    n_epochs = params['n_epochs'] 
+    learning_rate=params['learning_rate'] 
+    binary=params['binary']
+    print_every=50 
+    current_loss=0.0
+    n_trained=0
+    start = time.time() 
+    
+    for epoch in range(n_epochs): 
+        print(short_line)
+        print(f"Epoch [{epoch}/{n_epochs}]: ")
+        order_ind = np.arange(len(clip_list)) 
+        np.random.shuffle(order_ind) 
+        for i in order_ind: 
+            output,loss = Train_rnn_on_clip(rnn=rnn, clip=clip_list[i], clip_converter=params, learning_rate=learning_rate, binary=binary) 
+            current_loss+=loss 
+            n_trained+=1
+            message = f"Time passed: {Time_since(start)}"+os.linesep
+            message += f"Current loss is [{current_loss}]" 
+            Print_every(n_trained, print_every, message) 
+            
+    return rnn 
+        
+
+# predict a clip using passed rnn 
+def Predict(rnn:RNN, clip:clip_it, params=rnn_params) -> int: 
+    hidden = rnn.initHidden() 
+    sentences_tensor = torch.from_numpy(Clip_to_vector_sequential(params, clip)) 
+    category_tensor = torch.from_numpy(Clip_to_category_vector(clip, binary=params['binary'])) 
+    
+    for i in range(sentences_tensor.size()[0]):
+        output, hidden = rnn(sentences_tensor[i], hidden) 
+    prediction = torch.argmax(output).item() 
+    return prediction 
+    
+
+# test rnn on a single clip, return boolean
+def Test_rnn_on_clip(rnn:RNN, clip:clip_it, params=rnn_params) -> bool: 
+    prediction = Predict(rnn, clip, params) 
+    if params['binary']: 
+        clip.set_pred_binary_label(prediction) 
+        return prediction==(clip.get_label_binary()**2) 
+    else: 
+        clip.set_pred_label(prediction) 
+        return prediction==clip.get_label() 
+        
+
+# test trained learner on a list of clips, returns mislabeled clips
+def Test_rnn(rnn:RNN, clip_list:list, params=rnn_params) -> list:
+    to_return = list() 
+    for clip in clip_list: 
+        if not(Test_rnn_on_clip(rnn, clip, params)): 
+            to_return.append(clip) 
+    return to_return 
+
+
+
+
+# train the passed learner and return filed cases 
+def Train_and_test_learner(learner, X:list, Y=None, params=rnn_params) -> tuple: 
     ''' This function should train on passed X,Y data with test_ration split 
         X should be a list of clip objects, this is for the return value
-        return is a two-tuple, first is result message with accuracies, second is list of mislabeled clips'''
+        return is a two-tuple, first is result message with accuracies, second is list of mislabeled clips''' 
+    test_ratio=params['test_ratio']
     mislabeled_clips = list() 
-    train_accuracy = 0.0 
-    test_accuracy = 0.0 
-    default_accuracy = 0.0 
-    auc_score = 0.0 
+    random_ind = np.arange(len(X)) 
+    np.random.shuffle(random_ind) 
+    X_train = list() 
+    X_test = list() 
+    cut_ind = int(len(X)*test_ratio) 
+    for i in range(len(X)): 
+        if i<cut_ind: 
+            X_test.append(X[i].copy()) 
+        else: 
+            X_train.append(X[i].copy()) 
+    
+    learner = Train_rnn(clip_list=X_train, rnn=learner, params=params) 
+    
+    mis_test_clips = Test_rnn(learner, X_test, params)
+    mis_training_clips = Test_rnn(learner, X_train, params) 
+    train_accuracy = len(mis_training_clips)/float(len(X_train)) 
+    test_accuracy = len(mis_test_clips)/float(len(X_test)) 
+    mislabeled_clips = mis_test_clips + mis_training_clips 
+    n_default=0
+    for clip in X: 
+        if params['binary'] and (clip.get_label_binary()==0): 
+            n_default+=1 
+        elif (clip.get_label()==1): 
+            n_default+=1 
+            
+    default_accuracy = float(n_default)/len(X) 
     result_msg = (f"Total number of clips: [{len(X)}]" + os.linesep) 
     result_msg += (f"Train accuracy is: [{train_accuracy}]" + os.linesep) 
     result_msg += (f"Test accuracy is: [{test_accuracy}]" + os.linesep) 
     result_msg += (f"Default accuracy is: [{default_accuracy}]" + os.linesep) 
-    result_msg += (f"AUC score is: [{auc_score}]" + os.linesep) 
     result_msg += (f"Number of mislabeled test clips: [{len(mislabeled_clips)}]")
-    return (result_msg , mislabeled_clips)
+    return (result_msg, mislabeled_clips) 
 
 
+# This function prompt for params of rnn 
+def Prompt_for_rnn_params(): 
+    rnn_params['chat_window'] = prompt_for_int("Enter chat window in int: ", min_v=1) 
+    rnn_params['overlap'] = prompt_for_int("Enter overlap in int: ", min_v=0) 
+    rnn_params['n_epoch'] = prompt_for_int("Enter number of epoch: ", min_v=1) 
+    ans = prompt_for_str("Train on binary? (y/n): ", options={'y','n'}) 
+    if ans=='n': 
+        rnn_params['binary']=False 
+    rnn_params['learning_rate'] = prompt_for_float("Enter learning rate in float: ", min_v=0.005)
+    rnn_params['test_ratio'] = prompt_for_float("Enter the test ratio: ", min_v=0.1)
+    rnn_params['hidden_size'] = prompt_for_int("Enter hidden size: ", min_v=10) 
 
+    
 # ====================================== end of objects and methods ====================================
 
 def main(): 
     while(True): # keeps prompting for and train on data 
         print(long_line)
-        clip_list = Prompt_for_data()
-        if len(clip_list)==0: 
-            break  
+        clip_list = Prompt_for_data() 
+        if len(clip_list)==0:
+            break 
         # delete this part if you want
         else: 
             print(f"Number of clips found: [{len(clip_list)}]")  
             
+        rnn_params['kv'] = Load_wv() 
+        ans = prompt_for_str("Do you want to use default params? (y/n): ", options={'y','n'})
+        if ans=='n': 
+            Prompt_for_rnn_params() 
         
+        if rnn_params['binary']: 
+            output_size=2 
+        else: 
+            output_size=9
+        learner = RNN(input_size=rnn_params['kv'].vector_size, hidden_size=rnn_params['hidden_size'], output_size=output_size)
         
         # change this part 
-        msg,mislabeled = Train_and_test_learner(learner=None, X=clip_list, Y=None, test_ratio=0.2) 
+        msg,mislabeled = Train_and_test_learner(learner=learner, X=clip_list) 
         print(f"Printing out test result: ") 
         print(short_line)
         print(msg) 
@@ -185,9 +378,7 @@ def main():
         print(f"File saved as {file_path}") 
         continue
             
-        
     return 
-
 
 
 # ====================================== user prompts =============================================== 

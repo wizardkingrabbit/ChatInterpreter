@@ -246,10 +246,11 @@ def Compare_two_words(word_vector, w1:str, w2:str) -> str:
         return "One of the words is not in vocab" 
 
 
-def Check_trained_model(word_vector): 
+def Check_trained_model(word_vector:gensim.models.KeyedVectors): 
     ''' This is for main to call when user want to check a trained model''' 
     while(True): 
-        print(short_line)
+        print(short_line) 
+        print(f"Vocabulary size is: [{len(word_vector.vocab)}]")
         print('Enter either one word to find most similar or two to find similarity, enter 0 to exit')
         sentence = prompt_for_str('Enter here: ') 
         if sentence=='0': 
@@ -376,7 +377,7 @@ def Train_new_model_sequential(params=w2v_prms) -> gensim.models.KeyedVectors:
             if first_run: # error when no file is entered
                 print(f"You have to enter at least one file to check") 
                 continue
-            Check_trained_model(word_vector=model) 
+            Check_trained_model(word_vector=model.wv) 
             continue
         try:
             with open(file_path, encoding='utf-8') as f: 
