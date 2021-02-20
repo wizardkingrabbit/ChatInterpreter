@@ -1,3 +1,3 @@
 import numpy as np 
-x={1:1,2:2,3:3,4:4} 
-print(x.values())
+x={2:2,4:4,1:1} 
+print(sorted(x.keys(),key=x.get,reverse=True))
