@@ -141,12 +141,15 @@ def Clip_list_2_mlp_data(clip_list:list, kv:KeyedVectors, threshold=0.75, topk=-
         Turns the chat list into a single vector using kv 
         turns the label into a label vector 
         concate them into two 2d vectors''' 
-    tup_list = Clip_list_to_tuples(clip_list,binary)
+    tup_list = Clip_list_to_tuples(clip_list,binary) 
+    class0=0 
+    for i in tup_list: class0=(class0+1 if i[1]==0 else class0)
+    print(f"In tuple list, number of class 0 is: [{class0}]")
     chat_vecs = np.array([Chat_to_1d_vec(i[0],kv,threshold,topk) for i in tup_list],dtype=np.float32)
     label_vecs = np.array([i[1] for i in tup_list]) 
     v_size = np.max(label_vecs)+1 
     Y = np.zeros((label_vecs.shape[0],v_size), dtype=np.float32) 
-    Y[:,label_vecs]=1.0
+    Y[np.arange(Y.shape[0]),label_vecs]=1.0
     return (chat_vecs, Y)
    
    
@@ -159,10 +162,12 @@ def Test_mlp(clip_list:list, kv:KeyedVectors):
     ans=prompt_for_str(f"Do you want binary labels? (y/n): ", options={'y','n'}) 
     binary=(ans=='y')
     print(f"Testing mlp data loader on [{len(clip_list)}] clips")
-    X,Y = Clip_list_2_mlp_data(clip_list,kv) 
+    X,Y = Clip_list_2_mlp_data(clip_list,kv,binary=binary) 
     print(f"Each word turns into a vector of size: [{kv.vector_size}]")
-    print(f"X is a vector of shape: {X.shape}") 
-    print(f"Y is a vector of shape: {Y.shape}") 
+    print(f"X is a vector of shape: {X.shape} and dtype: {X.dtype}") 
+    print(f"Y is a vector of shape: {Y.shape} and dtype: {Y.dtype}") 
+    n_class0 = np.sum(Y[:,0]) 
+    print(f"Number of class 0 is [{n_class0}]")
     return 
     
     
@@ -193,6 +198,10 @@ def main():
         if ans=='e': break 
         print(f"Enter your testing data")
         clip_list = Prompt_for_data() 
+        n_class1 = 0 
+        for clip in clip_list: 
+            n_class1+=clip.get_label_binary()**2
+        print(f"Number of class 0: [{n_class1}]")
         if ans=='ohv': 
             Test_ohv(clip_list) 
             continue 
