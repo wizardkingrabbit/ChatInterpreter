@@ -166,6 +166,7 @@ def Test_mlp(clip_list:list, kv:KeyedVectors):
     return 
     
     
+'''================================================= RNN data loader ================================================''' 
 
 
 
@@ -186,8 +187,9 @@ def main():
         print(f"Enter testing options: ") 
         print(f"[ohv]: to test one-hot vector") 
         print(f"[mlp]: to test multi-layered perceptron data loader")
+        print(f"[rnn]: to test rnn data loader")
         print(f"[e]: exit")
-        ans=prompt_for_str("Enter here: ", options={'ohv','mlp','e'}) 
+        ans=prompt_for_str("Enter here: ", options={'ohv','mlp','rnn','e'}) 
         if ans=='e': break 
         print(f"Enter your testing data")
         clip_list = Prompt_for_data() 
@@ -197,6 +199,8 @@ def main():
         elif ans=='mlp': 
             Test_mlp(clip_list, Load_wv()) 
             continue 
+        elif ans=='rnn': 
+            continue
     return 
 
 
