@@ -40,9 +40,7 @@ input_size = 300
 sequence_length = 10
 hidden_size = 128
 num_layers = 1
-<<<<<<< HEAD
 binary = True
-=======
 
         super(RNN, self).__init__()
 
