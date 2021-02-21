@@ -65,3 +65,9 @@ Duo Chen:
 Feb 16: 
 Jing Tian: 
 > in testing, there can be unseen vocabs not in training set. 
+
+
+Feb 20: 
+Duo Chen: 
+> The annoying thing is that because of lack of data sets, learner greatly differ based on the training test split 
+> Different streamers requires very different parameters, one need a hidden layer of 90, the other need a hidden layer of 3

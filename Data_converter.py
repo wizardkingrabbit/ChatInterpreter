@@ -144,7 +144,7 @@ def Clip_list_2_mlp_data(clip_list:list, kv:KeyedVectors, threshold=0.75, topk=-
     tup_list = Clip_list_to_tuples(clip_list,binary) 
     class0=0 
     for i in tup_list: class0=(class0+1 if i[1]==0 else class0)
-    print(f"In tuple list, number of class 0 is: [{class0}]")
+    # print(f"In tuple list, number of class 0 is: [{class0}]")
     chat_vecs = np.array([Chat_to_1d_vec(i[0],kv,threshold,topk) for i in tup_list],dtype=np.float32)
     label_vecs = np.array([i[1] for i in tup_list]) 
     v_size = np.max(label_vecs)+1 
