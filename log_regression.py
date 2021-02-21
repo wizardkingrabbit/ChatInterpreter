@@ -33,7 +33,7 @@ def logistic_classification(X, Y, classifier = None):
 		mode = "Training"
 		msg_line += f"Number of training examples: [{X.shape[0]}]" + os.linesep
 		msg_line += f"Vocabulary size: [{X.shape[1]}]" + os.linesep
-		classifier = linear_model.LogisticRegression(penalty = 'l2', tol = 0.05, solver = "liblinear", max_iter = 150)
+		classifier = linear_model.LogisticRegression(penalty = 'l2', tol = 0.3, solver = "sag", max_iter = 10)
 		classifier.fit(X, Y)
 	else:
 		mode = "Validation/Testing"
@@ -257,16 +257,15 @@ def main(the_text = None, the_y = None, t_size = None, v_size = None, test_has_a
 	# define stop word
 	if (not always_default):
 		if_stop = prompt_for_str("Do you want to use default english stopwords or stopwords given by my author? (default/author)", {"default","author"})
-		special_stop_word = None
 		if (if_stop == "default"):
-			pass
+			special_stop_word = set(stopwords.words('english'))
 		if (if_stop == "author"):
 			special_stop_word = {"1", "2", "11", "111111", "gg", "gg gg", "LUL", "LOL"}
 	# construct the vectorizer
 	if (special_stop_word == None):
-		vect = CountVectorizer(ngram_range = (1, 5), stop_words = 'english', min_df = 0.01, tokenizer = Embedding_tokenize)
+		vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01, tokenizer = Embedding_tokenize)
 	else:
-		vect = CountVectorizer(ngram_range = (1, 5), stop_words = special_stop_word, min_df = 0.01,  tokenizer = Embedding_tokenize)
+		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01,  tokenizer = Embedding_tokenize)
 	X = vect.fit_transform(the_text)
 	#X = to_ohv(the_text)
 	# make classifier
