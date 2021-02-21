@@ -33,13 +33,14 @@ device = torch.device('cpu')
 # #hyperparameters
 num_classes = 2             # defaulting to binary 
 num_epochs = 5
-batch_size = 1
+batch_size = 10
 learning_rate = 0.005
 
 input_size = 300
 sequence_length = 10
 hidden_size = 128
 num_layers = 1
+binary = True
 
 class RNN(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, num_classes):
@@ -65,8 +66,14 @@ clip_list = Prompt_for_data()
 print(f"Number of clips found: [{len(clip_list)}]")  
     
 kv = Load_wv()
-data = Clip_list_2_rnn_data(clip_list, kv)              # default binary=True
+data = Clip_list_2_rnn_data(clip_list, kv, binary)          
 learner = RNN(input_size, hidden_size, num_layers, num_classes).to(device)
+
+# turn data into correct batch size
+inputs = np.zeros(batch_size, i[0].shape[0], i[0].shape[1])
+for i in range(len(inputs)):
+    inputs[i] = data[i]
+
 
 
 # Loss and optimizer
@@ -77,9 +84,9 @@ optimizer = torch.optim.Adam(learner.parameters(), lr=learning_rate)
 n_total_steps = len(data)
 for epoch in range(num_epochs):
     for i in data:  
-        # origin shape: [N, 1, 28, 28]
-        # resized: [N, 28, 28]
+        # need to be shape (batch size, shape[0], shape[1])
         #inputs = clips.reshape(-1, sequence_length, input_size).to(device)
+        inputs = np.zeros(batch_size, i[0].shape[0], i[0].shape[1])
         inputs = i[0]
         inputs = np.expand_dims(inputs, axis=0)
         print(inputs.shape)
