@@ -243,9 +243,9 @@ def main():
     while(True): 
         print(long_line)
         print(f"Enter testing options: ") 
-        print(f"[ohv]: to test one-hot vector") 
-        print(f"[mlp]: to test multi-layered perceptron data loader")
-        print(f"[rnn]: to test rnn data loader")
+        print(f"[ohv]: to test one-hot vectorizer") 
+        print(f"[mlp]: to test multi-layered perceptron data converter")
+        print(f"[rnn]: to test rnn data converter")
         print(f"[e]: exit")
         ans=prompt_for_str("Enter here: ", options={'ohv','mlp','rnn','e'}) 
         if ans=='e': break 
