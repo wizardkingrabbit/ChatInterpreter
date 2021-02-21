@@ -70,8 +70,10 @@ data = Clip_list_2_rnn_data(clip_list, kv, binary)
 learner = RNN(input_size, hidden_size, num_layers, num_classes).to(device)
 
 # turn data into correct batch size
-inputs = np.zeros(batch_size, i[0].shape[0], i[0].shape[1])
-for i in range(len(inputs)):
+inputs = list()
+temp_inputs = np.zeros(batch_size, data[0].shape[0], i[0].shape[1])
+
+for i in range(len(temp_inputs)):
     inputs[i] = data[i]
 
 
