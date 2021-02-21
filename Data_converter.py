@@ -220,7 +220,10 @@ def Test_rnn_converter(clip_list:list, kv:KeyedVectors):
     ans=prompt_for_str(f"Do you want binary labels? (y/n): ", options={'y','n'}) 
     binary=(ans=='y') 
     print(f"Testing rnn data converter on [{len(clip_list)}] clips")
-    data = Clip_list_2_rnn_data(clip_list, kv, binary)[:25]
+    data = Clip_list_2_rnn_data(clip_list, kv, binary)[:25] 
+    print(f"Type of returned data is: [{type(data)}]") 
+    print(f"Each item in the data is: [{type(data[0])}]") 
+    print(f"Within which are: {[type(i) for i in data[0]]}")
     print(f"Using the first 25 clips") 
     print(f"Chat 2d arrays have lengths: {[i[0].shape[0] for i in data]}")
     return  
