@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# this is the template learner, do not change this file but make copies and name them accordingly
 
 
 # import all you need
@@ -34,16 +33,17 @@ device = torch.device('cpu')
 num_classes = 2             # defaulting to binary 
 num_epochs = 5
 batch_size = 10
+batch_size = 1
 learning_rate = 0.005
 
 input_size = 300
 sequence_length = 10
 hidden_size = 128
 num_layers = 1
+<<<<<<< HEAD
 binary = True
+=======
 
-class RNN(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, num_classes):
         super(RNN, self).__init__()
 
         # Put the declaration of the RNN network here
@@ -68,6 +68,38 @@ print(f"Number of clips found: [{len(clip_list)}]")
 kv = Load_wv()
 data = Clip_list_2_rnn_data(clip_list, kv, binary)          
 learner = RNN(input_size, hidden_size, num_layers, num_classes).to(device)
+data = Clip_list_2_rnn_data(clip_list, kv)              # default binary=True
+learner = RNN(input_size, hidden_size, num_layers, num_classes).to(device)
+
+
+# Loss and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(learner.parameters(), lr=learning_rate)  
+
+
+n_total_steps = len(data)
+for epoch in range(num_epochs):
+    for i in data:  
+        # origin shape: [N, 1, 28, 28]
+        # resized: [N, 28, 28]
+        #inputs = clips.reshape(-1, sequence_length, input_size).to(device)
+        inputs = i[0]
+        inputs = np.expand_dims(inputs, axis=0)
+        print(inputs.shape)
+        inputs = torch.from_numpy(inputs).to(device)
+        labels = torch.from_numpy(i[1]).to(device)
+        
+        # Forward pass
+        outputs = learner(inputs)
+        loss = criterion(outputs, labels[0])
+        
+        # Backward and optimize
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        if (i+1) % 100 == 0:
+            print (f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
 
 # turn data into correct batch size
 inputs = list()

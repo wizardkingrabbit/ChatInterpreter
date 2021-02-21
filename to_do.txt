@@ -10,7 +10,7 @@ Before date:
 
 Before Feb/21/2021 [23:59]: 
 [] Nate and Duo Chen: either implement something that turn list of clips into tensors, or turn a clip into one vector to use sklearn
-
+[] Nate finish RNN
 
 
 Before Feb/16/2021 [17:00]: 

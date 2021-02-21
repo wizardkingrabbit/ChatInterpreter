@@ -19,3 +19,4 @@ T90Official[2].json: https://www.twitch.tv/videos/888900301
 TheViper[0].json: https://www.twitch.tv/videos/846110109
 TheViper[1].json: https://www.twitch.tv/videos/867212060
 TheViper[2].json: https://www.twitch.tv/videos/828980165
+Quin69[0].json: https://www.twitch.tv/videos/918876815
