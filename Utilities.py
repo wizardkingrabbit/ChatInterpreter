@@ -5,6 +5,8 @@ import os
 import json 
 import pickle 
 import copy 
+import sys 
+import math 
 
 
 long_line = '================================================================='
@@ -77,6 +79,7 @@ def prompt_for_file_folder(message:str, exit_conds={}) -> str: # prompt for file
         else:
             print("invalid path, please enter again")
 
+
 def prompt_for_file(message:str, exit_conds={}) -> str: # prompt for file path or exit conditions special str, check error
     ''' prompt for a file path, exit upon entering exit condition string, do checking for validity''' 
     while(True):
@@ -88,6 +91,7 @@ def prompt_for_file(message:str, exit_conds={}) -> str: # prompt for file path o
             continue 
         else: 
             return file_path
+
 
 def prompt_for_dir(message:str, exit_conds={}) -> str: # prompt for dir path or exit when special str passed, check error 
     ''' Takes a [message] string, set of str as exit conditions 
@@ -144,3 +148,17 @@ def Clip_chat_filter(chat:str, context:list) -> bool:
     return True  
 
 
+# print out a progress bar to be used in for loop
+def Print_progress(progress:float): 
+    ''' Call this funciton in the for loop without any other print statements'''
+    progress = math.ceil(progress/0.01)+1
+    if progress>=100: 
+        sys.stdout.write('\r' +' '*150 + '\r') 
+        return  
+    to_print='Progress: [' 
+    to_print += progress*'+' 
+    to_print += (100-progress)*' ' 
+    to_print += ']'
+    sys.stdout.write('\r')
+    sys.stdout.write(to_print) 
+    return 
