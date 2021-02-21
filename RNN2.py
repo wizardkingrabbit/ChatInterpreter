@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# this is the template learner, do not change this file but make copies and name them accordingly
 
 
 # import all you need
