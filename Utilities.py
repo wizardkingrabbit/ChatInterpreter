@@ -7,6 +7,7 @@ import pickle
 import copy 
 import sys 
 import math 
+import time 
 
 
 long_line = '================================================================='
@@ -149,16 +150,23 @@ def Clip_chat_filter(chat:str, context:list) -> bool:
 
 
 # print out a progress bar to be used in for loop
-def Print_progress(progress:float): 
-    ''' Call this funciton in the for loop without any other print statements'''
+def Print_progress(progress:float, object=None, message='') -> bool: 
+    ''' Call this funciton in the for loop without any other print statements 
+        the object is just for when it is called in list comprehension''' 
     progress = math.ceil(progress/0.01)+1
     if progress>=100: 
         sys.stdout.write('\r' +' '*150 + '\r') 
-        return  
-    to_print='Progress: [' 
+        return object 
+    to_print='\rProgress: [' 
     to_print += progress*'+' 
     to_print += (100-progress)*' ' 
-    to_print += ']'
-    sys.stdout.write('\r')
+    to_print += ']' 
+    to_print += message
     sys.stdout.write(to_print) 
-    return 
+    return object  
+
+
+
+# Funciton for random shuffle so we get a consistent result 
+def Default_shuffle_func() -> float: 
+    return 0.314

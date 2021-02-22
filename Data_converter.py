@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from Tokenizer_kit import * 
 import numpy as np 
 from Embedding import *
@@ -34,7 +36,7 @@ def Clip_list_to_tuples(clip_list:list, binary=True, randomize=False) -> list:
         turn each clip into a tuple of (chat list, label int) 
         label int is determined by binary parameter 
         randomize will randomize the returned list for better learner training''' 
-    to_return = [Clip_to_tuple(i,binary) for i in clip_list] 
+    to_return = [Print_progress(p/len(clip_list),Clip_to_tuple(i,binary)) for p,i in enumerate(clip_list)] 
     if randomize: 
         random.shuffle(to_return)
     return to_return
@@ -174,7 +176,7 @@ def Test_mlp_converter(clip_list:list, kv:KeyedVectors):
 '''================================================= RNN data converter ================================================''' 
 # Turns a list of tokens into a normalized vector 
 def Token_list_to_vec(token_list:list, kv:KeyedVectors) -> np.ndarray: 
-    to_return = 0.0 
+    to_return = np.zeros(kv.vector_size, dtype=np.float32)
     for token in token_list: 
         to_return = to_return + Word_to_vector(token,kv) 
     to_return = Normalize_vector(to_return) 
@@ -182,7 +184,7 @@ def Token_list_to_vec(token_list:list, kv:KeyedVectors) -> np.ndarray:
 
 
 # Turns a list of chats into a 2d vector using embedding on token list
-def Chat_to_2d_vec(chat_list:list, kv:KeyedVectors, window=30, overlap=5) -> np.ndarray: 
+def Chat_to_2d_vec(chat_list:list, kv:KeyedVectors, window=20, overlap=3) -> np.ndarray: 
     ''' Every [window] number of chats are considered a sentence, sentence window shifts with overlap'''
     i=0 
     assert overlap<window
@@ -196,17 +198,15 @@ def Chat_to_2d_vec(chat_list:list, kv:KeyedVectors, window=30, overlap=5) -> np.
     return np.array(vec_list, dtype=np.float32) 
 
 
-# Turns each clip into a (chat 2d array, label 1d array) tuple 
+# Turns each clip into a (chat 2d array, label int) tuple 
 def Clip_list_2_rnn_data(clip_list:list, kv:KeyedVectors, binary=True) -> list: 
     to_return = list() 
     n_clips=len(clip_list) 
     assert n_clips>0 
-    print(f"Processing clips...")
     for i,clip in enumerate(clip_list): 
         chat,label = Clip_to_tuple(clip, binary) 
-        Y = np.zeros(2 if binary else 9, dtype=np.float32) 
-        Y[label]=1.0
-        to_return.append((Chat_to_2d_vec(chat,kv), Y)) 
+        chat = Chat_to_2d_vec(chat,kv)
+        to_return.append((np.expand_dims(chat,axis=1),label))  
         Print_progress(i/n_clips) 
     return to_return 
 
@@ -225,14 +225,9 @@ def Test_rnn_converter(clip_list:list, kv:KeyedVectors):
     print(f"Each item in the data is: [{type(data[0])}]") 
     print(f"Within which are: {[type(i) for i in data[0]]}")
     print(f"Using the first 25 clips") 
-    print(f"Chat 2d arrays have lengths: {[i[0].shape[0] for i in data]}")
+    print(f"Chat 2d arrays have shapes: {[i[0].shape for i in data]}")
     return  
     
-
-
-
-
-
 
 
 

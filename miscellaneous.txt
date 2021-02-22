@@ -71,3 +71,16 @@ Feb 20:
 Duo Chen: 
 > The annoying thing is that because of lack of data sets, learner greatly differ based on the training test split 
 > Different streamers requires very different parameters, one need a hidden layer of 90, the other need a hidden layer of 3
+
+
+Feb 21: 
+Duo Chen: 
+> RNN best result is 86.9% in testing with default of 77% accuracy 
+> processing chat is also different depending on the chat community the streamer built up. 
+> best params was: 
+  > chat window 20,
+  > overlap 3, 
+  > n iter: 400 
+  > hidden size: 90 
+  > learning rate: 0.002
+  > test ratio: 0.2
