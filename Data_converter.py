@@ -36,7 +36,11 @@ def Clip_list_to_tuples(clip_list:list, binary=True, randomize=False) -> list:
         turn each clip into a tuple of (chat list, label int) 
         label int is determined by binary parameter 
         randomize will randomize the returned list for better learner training''' 
-    to_return = [Print_progress(p/len(clip_list),Clip_to_tuple(i,binary)) for p,i in enumerate(clip_list)] 
+    # to_return = list() 
+    # for i,clip in enumerate(clip_list): 
+    #     to_return.append(Clip_to_tuple(clip,binary)) 
+    #     Print_progress(i,len(clip_list)) 
+    to_return = [Print_progress(p,len(clip_list),Clip_to_tuple(i,binary)) for p,i in enumerate(clip_list)] 
     if randomize: 
         random.shuffle(to_return)
     return to_return
@@ -207,7 +211,7 @@ def Clip_list_2_rnn_data(clip_list:list, kv:KeyedVectors, binary=True) -> list:
         chat,label = Clip_to_tuple(clip, binary) 
         chat = Chat_to_2d_vec(chat,kv)
         to_return.append((np.expand_dims(chat,axis=1),label))  
-        Print_progress(i/n_clips) 
+        Print_progress(i,n_clips) 
     return to_return 
 
         

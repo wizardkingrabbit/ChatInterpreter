@@ -20,19 +20,21 @@ prompt for a clip pkl file to inspect. This is intended for later checking misla
 Same thing can be done using labeler, but with more tedious procedures, thus this module. 
 '''
 # ====================================== data loader methods =========================================
-def Load_clips_from_file(file_path:str) -> list: # load clip list from a passed file path 
+# load clip list from a passed file path
+def Load_clips_from_file(file_path:str) -> list:  
     ''' load the clip list from given file path, 
         return empty list if a file is not formated as a list of clips
         error if a file is not pickle file or path not valid''' 
     with open(file_path, 'rb') as f: 
         data = pickle.load(f) 
         
-    if (type(data) != list) or (len(data) < 1) or (type(data[0]) != clip_it): 
+    if (type(data) != list) or (len(data) < 1): 
         return list() 
     else: 
         return data 
     
 
+# load clip data from a directory
 def Directory_load(dir_path:str) -> list: # load clip data from a directory
     ''' load all clip data from a directory into one list, 
         error if path not valid or one file is not formated as pkl
@@ -43,7 +45,9 @@ def Directory_load(dir_path:str) -> list: # load clip data from a directory
     return to_return 
 
 
-def Sequential_load() -> list: # keeps prompting for files to load
+
+# keeps prompting for files to load
+def Sequential_load() -> list:
     ''' keeps prompting for files to load into clip list 
         returns empty list if one want to exit ''' 
     to_return = list() 
@@ -65,8 +69,9 @@ def Sequential_load() -> list: # keeps prompting for files to load
                 continue 
     return to_return
                  
-            
-def Prompt_for_data() -> list: # prompt for and load data 
+
+# prompt for and load data 
+def Prompt_for_data() -> list: 
     ''' This function prompt for data loading mode and load them in with special prompts 
         function is called in main to return the final list of clips 
         returns empty list if user want to exit''' 
@@ -89,18 +94,18 @@ def Prompt_for_data() -> list: # prompt for and load data
     return to_return
             
 
-def Inspect_data(data): # inspect the clips from passed clip list on terminal prompts
+# inspect the clips from passed clip list on terminal prompts
+def Inspect_data(data): 
     for i,clip in enumerate(data): 
         clip = clip.copy()
         print(short_line) 
-        print(f"Clip of [{i}/{len(data)}]: ") 
-        print(clip.clip_info()) 
-        ans = prompt_for_str(f"Do you want to see chat? (y/n): ", options={'y','n'}) 
-        if ans=='y': 
-            print(clip) 
+        print(f"Clip of [{i+1}/{len(data)}]: ") 
+        print(clip) 
+        ans = prompt_for_str(f"Next one? (hit enter): ", options={'',}) 
+
         
+
         
-    
     
 # ================================= end of loader methods ======================================
 def main(): 

@@ -83,4 +83,12 @@ Duo Chen:
   > n iter: 400 
   > hidden size: 90 
   > learning rate: 0.002
-  > test ratio: 0.2
+  > test ratio: 0.2 
+
+
+  Feb 23: 
+  Duo Chen: 
+  > most of the mislabeled clips contains a lot of noise, 
+  > for example, one of them has about 200-ish chats, but the manual classification is determined by a small block of lol inside 
+  > the "disappointment" class is mislabeled, probably due to low number in training sample 
+  > some other misclassifications are manual error, where rnn did a good job but human labeling is wrong. 

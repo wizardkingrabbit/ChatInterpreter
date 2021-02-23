@@ -46,8 +46,8 @@ class clip_it():
         to_return = '' 
         to_return += (f"true label is [{self.label}]: {self.available_labels[self.label]}" + os.linesep)
         to_return += (f"true binary label is [{self.get_label_binary()}]" + os.linesep) 
-        to_return += (f"predicted label is [{self.pred_label}]: {self.available_labels[self.pred_label]}" + os.linesep) 
-        to_return += (f"predicted binary label is [{self.pred_binary_label}]" + os.linesep) 
+        #to_return += (f"predicted label is [{self.pred_label}]: {self.available_labels[self.pred_label]}" + os.linesep) 
+        #to_return += (f"predicted binary label is [{self.pred_binary_label}]" + os.linesep) 
         return to_return
     
     

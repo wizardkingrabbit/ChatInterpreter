@@ -150,19 +150,25 @@ def Clip_chat_filter(chat:str, context:list) -> bool:
 
 
 # print out a progress bar to be used in for loop
-def Print_progress(progress:float, object=None, message='') -> bool: 
+def Print_progress(i:int, n:int, object=None, message='') -> bool: 
     ''' Call this funciton in the for loop without any other print statements 
-        the object is just for when it is called in list comprehension''' 
-    progress = math.ceil(progress/0.01)+1
-    if progress>=100: 
-        sys.stdout.write('\r' +' '*150 + '\r') 
+        the object is just for when it is called in list comprehension 
+        only the first 30 characters in message will be used''' 
+    message = message[:30]
+    if i==n-1: 
+        time.sleep(0.15)
+        sys.stdout.write('\r' +' '*170 + '\r') 
         return object 
-    to_print='\rProgress: [' 
+    progress = float(i+1)/n 
+    progress = math.ceil(progress/0.01)
+    to_print='\r Progress: [' 
     to_print += progress*'+' 
     to_print += (100-progress)*' ' 
     to_print += ']' 
-    to_print += message
+    to_print += message 
+    to_print += '\r'
     sys.stdout.write(to_print) 
+    # time.sleep(0.001)
     return object  
 
 

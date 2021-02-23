@@ -13,8 +13,6 @@ from Data_converter import *
 import torch
 import os
 from random import shuffle
-import time
-import math
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
@@ -127,7 +125,7 @@ def Train_rnn(data_list:list, rnn:RNN, n_epochs=rnn_params['n_epochs'], lr=rnn_p
     for i,ind in enumerate(epoch_ind): 
         clip = data_list[int(ind)] 
         output, loss = Train_rnn_on_clip(rnn, clip) 
-        Print_progress(i/len(epoch_ind), message=f"Current loss: [{loss}]") 
+        Print_progress(i,len(epoch_ind), message=f"Current loss: [{loss}]") 
         
     return rnn 
         
@@ -155,7 +153,7 @@ def Prediction_accuracy(clip_list:list, rnn:RNN, mislabeled=list()) -> float:
     n_default = float(np.sum(Y==Y_h))
     for i,clip in enumerate(clip_list): 
         Y_h[i] = Predict(rnn,clip) 
-        if Y_h[i]!=Y[i]: mislabeled.append(clip_list[i])
+        if Y_h[i]!=Y[i]: mislabeled.append(i)
     n_correct = float(np.sum(Y==Y_h))
     default_acc = n_default/len(clip_list) 
     test_acc = n_correct/len(clip_list)
@@ -175,21 +173,26 @@ def main():
         print(f"Shuffling clips")
         shuffle(clip_list, Default_shuffle_func) 
         print(f"Splitting train and test on ratio: [{rnn_params['test_ratio']}]")
-        train,test = Train_test_split(clip_list, rnn_params['test_ratio']) 
+        train_clips,test_clips = Train_test_split(clip_list, rnn_params['test_ratio']) 
         
         mislabeled = list() 
         kv = Load_wv('word_vectors/teo.kv') 
-        print(f"Processing clips")
-        train = Clip_list_2_rnn_data(train, kv, rnn_params['binary']) 
-        test = Clip_list_2_rnn_data(test, kv, rnn_params['binary']) 
+        print(f"Processing train clips")
+        train = Clip_list_2_rnn_data(train_clips, kv, rnn_params['binary']) 
+        print(f"processing test clips")
+        test = Clip_list_2_rnn_data(test_clips, kv, rnn_params['binary']) 
         # now train and test should be lists of tuple (chat 2d, label 1d) 
         rnn = RNN(kv.vector_size, rnn_params['hidden_size'], (2 if rnn_params['binary'] else 9)) 
         # for i in rnn.parameters(): print(i.size())
         # print(f"Number of params is: [{len(rnn.parameters())}]")
         print("Training...") 
-        rnn = Train_rnn(train, rnn) 
-        def_test_acc,test_acc = Prediction_accuracy(test, rnn, mislabeled) 
-        def_train_acc,train_acc = Prediction_accuracy(train, rnn, mislabeled) 
+        rnn = Train_rnn(train, rnn).to(device) 
+        ind=list() 
+        def_test_acc,test_acc = Prediction_accuracy(test, rnn, ind) 
+        mislabeled += [test_clips[i] for i in ind] 
+        ind=list()
+        def_train_acc,train_acc = Prediction_accuracy(train, rnn, ind) 
+        mislabeled += [train_clips[i] for i in ind]
         print(f"Default training accuracy is: [{def_train_acc}]")
         print(f"Training accuracy is: [{train_acc}]")
         print(f"Default test accuracy is: [{def_test_acc}]") 
@@ -199,8 +202,9 @@ def main():
         file_path = prompt_for_save_file(dir_path='mislabeled', f_format='.pkl') 
         if file_path==None: 
             continue
-        with open(file_path, 'wb') as f: 
+        with open(file_path, 'wb') as f:    
             pickle.dump(mislabeled, f) 
+            print(f"Dumped [{len(mislabeled)}] clips into file")
         print(f"File saved as {file_path}") 
         continue
         
