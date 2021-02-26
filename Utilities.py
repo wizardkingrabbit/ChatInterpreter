@@ -161,12 +161,12 @@ def Print_progress(i:int, n:int, object=None, message='') -> bool:
         return object 
     progress = float(i+1)/n 
     progress = math.ceil(progress/0.01)
-    to_print='\r Progress: [' 
+    to_print='\rProgress: [' 
     to_print += progress*'+' 
     to_print += (100-progress)*' ' 
     to_print += ']' 
     to_print += message 
-    to_print += '\r'
+    # to_print += '\r'
     sys.stdout.write(to_print) 
     # time.sleep(0.001)
     return object  

@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# this is the template learner, do not change this file but make copies and name them accordingly
 
 
 # import all you need
@@ -32,11 +31,11 @@ else:
     
 
 '''==================================================== Supportive methods ========================================''' 
-rnn_params={'n_epochs':400,
-            'learning_rate':0.002, 
+rnn_params={'n_epochs':450,
+            'learning_rate':0.001, 
             'binary':True, 
             'test_ratio':0.2, 
-            'hidden_size':90, 
+            'hidden_size':60, 
             }
 
 
@@ -176,7 +175,7 @@ def main():
         train_clips,test_clips = Train_test_split(clip_list, rnn_params['test_ratio']) 
         
         mislabeled = list() 
-        kv = Load_wv('word_vectors/teo.kv') 
+        kv = Load_wv('word_vectors/teo_once.kv') 
         print(f"Processing train clips")
         train = Clip_list_2_rnn_data(train_clips, kv, rnn_params['binary']) 
         print(f"processing test clips")
