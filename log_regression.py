@@ -21,6 +21,12 @@ from Embedding import *
 from Data_loader import *
 from Data_converter import *
 from random import shuffle
+from nltk.corpus import stopwords
+
+import enchant
+global_dict = enchant.Dict("en_US")
+global_slang = set({"F", "???", "!!!", "!?", "pog", "nice", "noice", "haha", "lol", "lul", "lmao", "yes", "noo", "no", "yeah", "ree", "oof", "pogu", "xd", "ez", "money", "GG", "gg"})
+nltk_stop_words = set(stopwords.words('english'))
 
 import warnings 
 warnings.filterwarnings(action='ignore')
@@ -43,7 +49,14 @@ def logistic_classification(X, Y, classifier = None):
 	class_probabilities = classifier.predict_proba(X)
 	test_auc_score = sklearn.metrics.roc_auc_score(Y, class_probabilities[:,1])
 	msg_line += mode + f" AUC value: [{format( 100*test_auc_score , '.2f')}]" + os.linesep
-	default_accuracy = classifier.score(X, np.zeros(len(Y)))
+	default_counter = 0
+	default_result = np.zeros(len(Y))
+	count = 0
+	while count < len(Y):
+		if (Y[count] == np.zeros(len(Y))[count]):
+			default_counter += 1
+		count += 1
+	default_accuracy = default_counter / len(Y)
 	msg_line += f" default accuracy: [{format( 100*default_accuracy , '.2f')}]" + os.linesep
 	counter = 0
 	my_error = []
@@ -110,9 +123,48 @@ def to_ohv(text_list, stop_words = [], min_len = 2):
 	return result
 
 # translate a word into something standard
-def my_translator(target_word):
-	pass
-
+def my_translator(target_word, stop_words = nltk_stop_words):
+	result = target_word
+	if global_dict.check(target_word):
+		# this word is a standard word, return it
+		result =  target_word
+	elif (target_word in global_slang):
+		# this word is not a standard word, is it an internet slang?
+		result =  target_word
+	elif (Embedding_word_modifier(target_word) in global_slang):
+		# Or it could be some special form of an iternet slang
+		result =  Embedding_word_modifier(target_word)
+	elif len(global_dict.suggest(target_word)) > 0:
+		# it is nothing but there are similar words
+		result =  global_dict.suggest(target_word)[0]
+	else:
+		# it is nothing, probably an emote
+		# but we do not have a similar word to it, so return itself
+		result = target_word
+	try:
+		# is it a number? Maybe we should purify numbers
+		_test = float(target_word)
+		result = "NUMBER_WORD"
+	except:
+		pass
+	if result == None:
+		result =  target_word
+#	elif result in stop_words:
+#		# if the result in in stop_words, we should not bother returning it
+#		pass
+	else:
+		result =  result
+	# last step : remove redundant consequtive words
+	real_result = []
+	last_letter = None
+	for letter in result:
+		if (not last_letter == None) and (letter == last_letter):
+			pass
+		else:
+			real_result.append(letter)
+		last_letter = letter
+	return Concatenate_str_list(real_result, splitter = '')
+        
 # please be sure that you give it a valid path when using it
 def add_filepath_to_set(the_path:str, is_file:bool, original_set):
     if (is_file):
@@ -124,18 +176,28 @@ def add_filepath_to_set(the_path:str, is_file:bool, original_set):
     return original_set
 
 # interpret a pkl file and extract its data into three lists
-def add_clipdata_to_set(clip_list, text_list, y_list, pkl_path):
-    the_file = open(pkl_path, 'rb')
-    the_pkl = pickle.load(the_file)
-    for clip in the_pkl:
-        clip_list.append(clip)
-        text_list.append(Concatenate_str_list(clip.chats))
-        if (clip.get_label_binary() == 0):
-            y_list.append(0)
-        else:
-            y_list.append(1)
-    the_file.close()
-    return clip_list, text_list, y_list
+def add_clipdata_to_set(clip_list, text_list, y_list, pkl_path, do_convert = True, filter_stopword = True, show_debug = False):
+	the_file = open(pkl_path, 'rb')
+	the_pkl = pickle.load(the_file)
+	for clip in the_pkl:
+		clip_list.append(clip)
+		if do_convert:
+			temp_text = []
+			for chat in clip.chats:
+				for word in chat.split():
+					temp_word = my_translator(word)
+					temp_text.append(temp_word)
+			if (show_debug):
+				print(temp_text)
+			text_list.append(Concatenate_str_list(temp_text))
+		else:
+			text_list.append(Concatenate_str_list(clip.chats))
+		if (clip.get_label_binary() == 0):
+			y_list.append(0)
+		else:
+			y_list.append(1)
+	the_file.close()
+	return clip_list, text_list, y_list
 
 # randomize data
 def randomize_data(clip_list, text_list, y_list):
@@ -231,8 +293,7 @@ def sudo_main(ask_save = True, ask_test = True, if_debug = True):
     training_size = len(Y)
     while (ask_test and input("Do you want to test this classifier on any unlabled clip data? (y/n)") == "y"):
         all_clip = []
-        Y = Y[training_size:]
-        text = text[training_size:]
+        training_size = len(Y)
         file_path = prompt_for_file("which file you want to do test on? ")
         if_answer = input("Is this file labeled? (y/n)") == "y"
         all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, file_path)
