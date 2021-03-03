@@ -92,3 +92,16 @@ Duo Chen:
   > for example, one of them has about 200-ish chats, but the manual classification is determined by a small block of lol inside 
   > the "disappointment" class is mislabeled, probably due to low number in training sample 
   > some other misclassifications are manual error, where rnn did a good job but human labeling is wrong. 
+  
+
+Mar 3:
+Nate:
+> GRU best result is 81.2% tesing accuracy with 75.5% default accuracy
+> Seems to be worse than RNN
+> best params were:
+  > chat window 20,
+  > overlap 3, 
+  > n iter: 500 
+  > hidden size: 200 
+  > learning rate: 0.002
+  > test ratio: 0.2 
