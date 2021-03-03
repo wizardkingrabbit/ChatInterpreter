@@ -31,11 +31,11 @@ else:
     
 
 '''==================================================== Supportive methods ========================================''' 
-rnn_params={'n_epochs':450,
-            'learning_rate':0.001, 
+rnn_params={'n_epochs':400,
+            'learning_rate':0.002, 
             'binary':True, 
             'test_ratio':0.2, 
-            'hidden_size':60, 
+            'hidden_size':90, 
             }
 
 
@@ -102,9 +102,13 @@ def Train_rnn_on_clip(rnn:RNN, clip:tuple, lr=rnn_params['learning_rate']):
     rnn.zero_grad() 
     chat_tensor = clip[0]
     label_tensor = clip[1]
+    #print("chat_tensor size:", chat_tensor.size())
+    #print("label_tensor size:", label_tensor.size())
     for i in range(chat_tensor.size()[0]): 
         output, hidden = rnn(chat_tensor[i], hidden) 
+        #print("output size:", output.size())
 
+    #print("output size:", output.size(), "; label_tensor size:", label_tensor.size())
     loss = criterion(output, label_tensor) 
     loss.backward()
     for p in rnn.parameters():
