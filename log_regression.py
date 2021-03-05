@@ -4,12 +4,13 @@
 import nltk 
 from nltk import word_tokenize
 import simplejson as json
+
 import sklearn
 from sklearn.feature_extraction.text import * 
 from sklearn.model_selection import train_test_split 
-
 from sklearn import linear_model 
 from sklearn import metrics 
+from sklearn.feature_extraction.text import TfidfTransformer
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,12 +51,9 @@ def logistic_classification(X, Y, classifier = None):
 	test_auc_score = sklearn.metrics.roc_auc_score(Y, class_probabilities[:,1])
 	msg_line += mode + f" AUC value: [{format( 100*test_auc_score , '.2f')}]" + os.linesep
 	default_counter = 0
-	default_result = np.zeros(len(Y))
-	count = 0
-	while count < len(Y):
-		if (Y[count] == np.zeros(len(Y))[count]):
+	for i in Y:
+		if (i == 0):
 			default_counter += 1
-		count += 1
 	default_accuracy = default_counter / len(Y)
 	msg_line += f" default accuracy: [{format( 100*default_accuracy , '.2f')}]" + os.linesep
 	counter = 0
@@ -154,6 +152,7 @@ def my_translator(target_word, stop_words = nltk_stop_words):
 #		pass
 	else:
 		result =  result
+#	return result
 	# last step : remove redundant consequtive words
 	real_result = []
 	last_letter = None
@@ -164,6 +163,27 @@ def my_translator(target_word, stop_words = nltk_stop_words):
 			real_result.append(letter)
 		last_letter = letter
 	return Concatenate_str_list(real_result, splitter = '')
+
+# simple version of my translator. there are fewer steps.
+def my_translator_simple(target_word, stop_words = nltk_stop_words):
+	result = target_word
+	if global_dict.check(target_word):
+		# this word is a standard word, return it
+		result =  target_word
+	elif (target_word in global_slang):
+		# this word is not a standard word, is it an internet slang?
+		result =  target_word
+	elif (Embedding_word_modifier(target_word) in global_slang):
+		# Or it could be some special form of an iternet slang
+		result =  Embedding_word_modifier(target_word)
+	elif len(global_dict.suggest(target_word)) > 0:
+		# it is nothing but there are similar words
+		result =  global_dict.suggest(target_word)[0]
+	else:
+		# it is nothing, probably an emote
+		# but we do not have a similar word to it, so return itself
+		result = target_word
+	return result
         
 # please be sure that you give it a valid path when using it
 def add_filepath_to_set(the_path:str, is_file:bool, original_set):
@@ -176,12 +196,16 @@ def add_filepath_to_set(the_path:str, is_file:bool, original_set):
     return original_set
 
 # interpret a pkl file and extract its data into three lists
-def add_clipdata_to_set(clip_list, text_list, y_list, pkl_path, do_convert = True, filter_stopword = True, show_debug = False):
+def add_clipdata_to_set(clip_list, text_list, y_list, pkl_path, do_convert = 0, filter_stopword = True, show_debug = True):
 	the_file = open(pkl_path, 'rb')
 	the_pkl = pickle.load(the_file)
 	for clip in the_pkl:
 		clip_list.append(clip)
-		if do_convert:
+		if do_convert == 0:
+			# no conversion, totally original text
+			text_list.append(Concatenate_str_list(clip.chats))
+		elif do_convert == 1:
+			# massive translation
 			temp_text = []
 			for chat in clip.chats:
 				for word in chat.split():
@@ -190,8 +214,16 @@ def add_clipdata_to_set(clip_list, text_list, y_list, pkl_path, do_convert = Tru
 			if (show_debug):
 				print(temp_text)
 			text_list.append(Concatenate_str_list(temp_text))
-		else:
-			text_list.append(Concatenate_str_list(clip.chats))
+		elif do_convert == 2:
+			# minimal translation, faster
+			temp_text = []
+			for chat in clip.chats:
+				for word in chat.split():
+					temp_word = my_translator_simple(word)
+					temp_text.append(temp_word)
+			if (show_debug):
+				print(temp_text)
+			text_list.append(Concatenate_str_list(temp_text))
 		if (clip.get_label_binary() == 0):
 			y_list.append(0)
 		else:
@@ -242,7 +274,7 @@ def best_param(ngram, panelty, dual, tol, C, fit_intercept, solver, max_iter, nu
 		num_iter -= 1
 	return np.average(va_err_list)
 
-def sudo_main(ask_save = True, ask_test = True, if_debug = True): 
+def sudo_main(ask_save = True, ask_test = True, if_debug = True, consistent_shuffle = True): 
     # main function, a sequence of supportive methods defined above 
     # see specifications in learner_output.txt \
     # one good practice is to keep indent within a function no more than 3
@@ -264,7 +296,12 @@ def sudo_main(ask_save = True, ask_test = True, if_debug = True):
     training_size = int(len(Y) * (1 - validation_ratio))
     validation_size = len(Y) - training_size
     # randomize the data
-    all_clip, text, Y = randomize_data(all_clip, text, Y)
+	if consistent_shuffle:
+		shuffle(all_clip, Default_shuffle_func)
+		shuffle(text, Default_shuffle_func)
+		shuffle(Y, Default_shuffle_func)
+	else:
+    	all_clip, text, Y = randomize_data(all_clip, text, Y)
     # train the model
     classifier, t_err, v_err, t_msg, v_msg = main(text, Y, training_size, validation_size)
     if if_debug:
@@ -311,7 +348,7 @@ def sudo_main(ask_save = True, ask_test = True, if_debug = True):
     return classifier.score(text[:training_size], Y[:training_size]), classifier.score(text[training_size:], Y[training_size:])
 
 # main
-def main(the_text = None, the_y = None, t_size = None, v_size = None, test_has_answer = True, always_default = False):
+def main(the_text = None, the_y = None, t_size = None, v_size = None, test_has_answer = True, always_default = False, tfidf = True):
 	if (the_text == None):
 		sudo_main()
 		return
@@ -323,8 +360,12 @@ def main(the_text = None, the_y = None, t_size = None, v_size = None, test_has_a
 		if (if_stop == "author"):
 			special_stop_word = {"1", "2", "11", "111111", "gg", "gg gg", "LUL", "LOL"}
 	# construct the vectorizer
-	if (special_stop_word == None):
+	if (special_stop_word == None and not tfidf):
 		vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01, tokenizer = Embedding_tokenize)
+	elif (special_stop_word == None and tfidf):
+		vect = TfidfVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01, tokenizer = Embedding_tokenize)
+	elif tfidf:
+		vect = TfidfVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01,  tokenizer = Embedding_tokenize)
 	else:
 		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01,  tokenizer = Embedding_tokenize)
 	X = vect.fit_transform(the_text)
