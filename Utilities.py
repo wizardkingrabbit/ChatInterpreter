@@ -155,7 +155,7 @@ def Print_progress(i:int, n:int, object=None, message='') -> bool:
         the object is just for when it is called in list comprehension 
         only the first 30 characters in message will be used''' 
     message = message[:30]
-    if i==n-1: 
+    if i>=n-1: 
         time.sleep(0.15)
         sys.stdout.write('\r' +' '*170 + '\r') 
         return object 

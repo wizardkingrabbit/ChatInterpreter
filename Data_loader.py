@@ -94,6 +94,15 @@ def Prompt_for_data() -> list:
     return to_return
             
 
+# load vod json file to comment list
+def Load_json(file_path=None) -> list: 
+    if file_path==None: 
+        file_path = prompt_for_file(f"Enter json file path") 
+    with open(file_path, encoding='utf-8') as f: 
+        data = json.load(f) 
+    return data['comments'] 
+
+
 # inspect the clips from passed clip list on terminal prompts
 def Inspect_data(data): 
     for i,clip in enumerate(data): 

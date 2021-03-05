@@ -69,6 +69,7 @@ class RNN(nn.Module):
         self.input_size = input_size 
         self.i2o = nn.Linear(input_size + hidden_size, output_size) 
         self.i2h = nn.Linear(input_size + hidden_size, hidden_size) 
+        self.h2h = nn.Linear(2*hidden_size, hidden_size) 
         self.soft_max = nn.LogSoftmax(dim=1) 
 
 
@@ -77,7 +78,8 @@ class RNN(nn.Module):
         # combined is both the input and hidden, compute it so it do not have to be computed twice 
         combined = torch.cat((input, hidden),dim=1)
         output = self.soft_max(self.i2o(combined)) 
-        hidden = self.i2h(combined)
+        hidden = self.i2h(combined) 
+        hidden = self.h2h(torch.cat((torch.zeros(1,self.hidden_size),hidden),dim=1))
         return output, hidden
 
     def initHidden(self):

@@ -9,7 +9,8 @@ from collections import defaultdict
 from Clip import *
 import gensim 
 import random 
-from gensim.models import KeyedVectors
+from gensim.models import KeyedVectors 
+from Clipper import *
 
 
 '''
@@ -232,6 +233,25 @@ def Test_rnn_converter(clip_list:list, kv:KeyedVectors):
     print(f"Chat 2d arrays have shapes: {[i[0].shape for i in data]}")
     return  
     
+
+
+
+'''========================================================= chronological data converter ==========================================='''
+
+# Convert a twitch comment list to few seconds intervals
+def Organize_chats_chrono(comments:list, interval=3) -> list: 
+    ''' split a list of chats into equal intervals, each interval is a tuple of (time,chat str)''' 
+    _,chats,t_stamps,_ = Twitch_Comment_to_data(comments,1) 
+    t=-interval
+    to_return = list() 
+    for chat,t_point in zip(chats,t_stamps): 
+        while t_point>(t+interval): 
+            t+=interval 
+            to_return.append([int(t),'']) 
+        to_return[-1][1]+=(os.linesep + str(chat))
+
+    return [tuple(i) for i in to_return]
+
 
 
 

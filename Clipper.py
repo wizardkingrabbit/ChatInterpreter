@@ -10,12 +10,13 @@ import copy
 
 ''' This module prompts user to enter json file name for twitch stream chat
     The json file must be formatted as twitch chat format
+
     User will enter parameters, or choose to use default values'''
     
 # ===================================== helper functions ============================================
     
-def Twitch_Comment_to_data(comments:dict, chat_window=10, ignore_notices=True): 
-    ''' takes a twitch comment formatted dict, outputs tuple of four items
+def Twitch_Comment_to_data(comments:list, chat_window=10, ignore_notices=True): 
+    ''' takeis a twitch comment formatted dict, outputs tuple of four items
         first is speed, second is chat string data, third is time points of those chats, fourth is video id
         ignore_notices is a bool value that decide whether to ignore sub/resub notices'''
     video_id = comments[0]['content_id']

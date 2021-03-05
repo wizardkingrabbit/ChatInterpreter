@@ -209,6 +209,8 @@ def main():
             pickle.dump(mislabeled, f) 
             print(f"Dumped [{len(mislabeled)}] clips into file")
         print(f"File saved as {file_path}") 
+        torch.save(rnn,'rnn.pt') 
+        print(f"saved learner as rnn.pt")
         continue
         
         
