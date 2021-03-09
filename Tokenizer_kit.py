@@ -1,8 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# this module defines tokenizing tools for us to use in leaner modules. 
-# typically tokanizing take a long string, returns a collection of tokens
-# thus any processing to get the long string should be done outside the tokenizing functions
+
+'''
+this module defines tokenizing tools for us to use in leaner modules. 
+typically tokanizing take a long string, returns a collection of tokens
+thus any processing to get the long string should be done outside the tokenizing functions
+'''
 
 import os 
 import numpy as np 
@@ -23,6 +26,7 @@ def Default_word_modifier(word:str) -> str:
     ''' by default, words are not modified'''
     return word 
 
+# converts a bag of words to a string for printing
 def BOW_to_str(bow:dict, freq_order=True, top_k=-1, indent='') -> str: 
     ''' This method turns a bow into user-friendly string for printing 
         printing order can be by frequency, or by a-b-c if by freq is false 
