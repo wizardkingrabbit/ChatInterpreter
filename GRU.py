@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-###
-# Utilizes Pytorch's builtin GRU function to create and train a GRU on clip data from a streamer, printing accuracies on test data at the end.
-# Very similar in structure to RNN.py.
-###
+'''
+Utilizes Pytorch's builtin GRU function to create and train a GRU on clip data from a streamer, printing accuracies on test data at the end.
+Very similar in structure to RNN.py.
+'''
 
 from Utilities import * 
 from Clip import * 
