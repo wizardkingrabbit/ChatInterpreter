@@ -1,7 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# import all you need
+###
+# Utilizes Pytorch's builtin GRU function to create and train a GRU on clip data from a streamer, printing accuracies on test data at the end.
+# Very similar in structure to RNN.py.
+###
+
 from Utilities import * 
 from Clip import * 
 from Tokenizer_kit import * 
@@ -21,24 +25,13 @@ import gensim
 import warnings 
 warnings.filterwarnings(action='ignore') 
 
-
-
 if torch.cuda.is_available(): 
     device = torch.device('cuda:0') 
 else: 
     device = torch.device('cpu') 
-    
-
-
-
-# Utilizes Pytorch's built in GRU function
-# Kept training functions mostly the same as RNN, only changed the RNN class to GRU and updated based on that
-# 
-#
-#
-
-
+  
 '''==================================================== Supportive methods ========================================''' 
+# changeable parameters for the GRU
 gru_params={'n_epochs':400,
             'learning_rate':0.002, 
             'binary':True, 
@@ -150,7 +143,7 @@ def Predict(gru:GRU, clip:tuple) -> int:
     clip = Clip_to_tensor(clip) 
     hidden = gru.initHidden()
 
-	# Generate the input for gru 
+    # Generate the input for gru 
     chat_tensor = clip[0]
     label_tensor = clip[1]
     for i in range(chat_tensor.size()[0]): 
@@ -222,10 +215,6 @@ def main():
         print(f"Dumped [{len(mislabeled)}] clips into file")
     print(f"File saved as {file_path}") 
     return 
-        
-        
-         
-         
          
 if __name__=='__main__': 
     main() 
