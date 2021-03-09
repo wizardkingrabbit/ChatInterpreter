@@ -24,7 +24,7 @@ w2v_prms = {'min_count':20,
 
 # ======================================= objects and methods =======================================
 
-
+# process data from json file
 def Process_vod(data): 
     ''' This function takes a data object from json file, process it into a list of chats 
         chats are ignored if they are outside specified start and end time''' 
@@ -33,8 +33,8 @@ def Process_vod(data):
     assert len(chat_array) == len(t_stamps) 
     return (chat_array, t_stamps)
    
-   
 
+# ignore streamer's greeting at the beginning
 def Prompt_for_start_time(max_v:int) -> float: 
     ''' prompt for start time with a specified maximum, message is fixed, float is returned'''
     while(True):
@@ -49,7 +49,8 @@ def Prompt_for_start_time(max_v:int) -> float:
     start_time = float(start_time) 
     return start_time 
         
-        
+    
+# ignore streamer's goodbye at the end  
 def Prompt_for_end_duration(max_v:int) -> float: 
     ''' prompt for an duration of ending, message is fixed, float is returned''' 
     while(True):    
@@ -64,6 +65,7 @@ def Prompt_for_end_duration(max_v:int) -> float:
     return float(ending_duration)
 
 
+# cut greeting and goodbye
 def Cut_ends(chat_array:np.array, t_stamps:np.array, start_time:float, end_time:float) -> list: 
     ''' This function cut ends of a chat list based on start time and end time''' 
     to_return = list() 
@@ -74,6 +76,7 @@ def Cut_ends(chat_array:np.array, t_stamps:np.array, start_time:float, end_time:
     return to_return 
 
 
+# split a chat list into blocks and concatenate each block into a long string
 def Thread_chats(chat_list:list, block_size=100) -> list: 
     ''' This function thread together chat messages, every block of chat is threaded into one sentence
         returns a list of threaded sentences'''
@@ -88,6 +91,7 @@ def Thread_chats(chat_list:list, block_size=100) -> list:
     return to_return
 
 
+# returns the vector of a passed word, does error checking
 def Vector_of(word_vector, word:str) -> np.ndarray: 
     ''' This function go fetch the vector of passed word in word vector, 
         returns None if error happen''' 
@@ -98,6 +102,7 @@ def Vector_of(word_vector, word:str) -> np.ndarray:
         return None 
 
 
+# return cos similarity of two words in float
 def Similarity_to_float(word_vector, w1:str, w2:str) -> float: 
     ''' This function returns the similarity of two words in passed vector, 
         if error happen, returns None''' 
@@ -108,6 +113,7 @@ def Similarity_to_float(word_vector, w1:str, w2:str) -> float:
         return None 
 
 
+# return top_k most similar words to passed word
 def Most_similar_to(word_vector, word:str, top_k:int) -> str: 
     ''' This function takes a word string, word vector object, and an int of how many to print out 
         returns a reader-friendly string to be printed out, or a special string when word is not in vocab''' 
@@ -122,6 +128,7 @@ def Most_similar_to(word_vector, word:str, top_k:int) -> str:
     return to_return
 
 
+# compare two words and return result in formated string
 def Compare_two_words(word_vector, w1:str, w2:str) -> str: 
     ''' Takes a word vector object and compute cosine similarity, return result as a str to print, 
         special string is returned if word not in vocab''' 
@@ -133,6 +140,7 @@ def Compare_two_words(word_vector, w1:str, w2:str) -> str:
         return "One of the words is not in vocab" 
 
 
+# one mother method to check a passed w2v model
 def Check_trained_model(word_vector:gensim.models.KeyedVectors): 
     ''' This is for main to call when user want to check a trained model''' 
     while(True): 
@@ -162,6 +170,7 @@ def Check_trained_model(word_vector:gensim.models.KeyedVectors):
     return 
 
 
+# prompt for model parameters before training
 def Prompt_for_training_params() -> dict: 
     ''' This model prompt for training parameters of word2vec, 
         if user decided to use default, returned value is None''' 
@@ -188,6 +197,7 @@ def Prompt_for_training_params() -> dict:
     return to_return 
 
 
+# train a new w2v model on a big corpus once
 def Train_new_model_once(params=w2v_prms) -> gensim.models.KeyedVectors: 
     ''' This model will prompt user to enter a collection of files first,
         and then train a word2vec model at once on the generated chat''' 
@@ -241,6 +251,7 @@ def Train_new_model_once(params=w2v_prms) -> gensim.models.KeyedVectors:
     return model.wv 
 
 
+# train a new m2v model on a collection of data sequentially
 def Train_new_model_sequential(params=w2v_prms) -> gensim.models.KeyedVectors: 
     ''' This is for main to call when user want to train a new model sequentially on json files
         returns the keyed vector object as trained result''' 
@@ -309,6 +320,7 @@ def Train_new_model_sequential(params=w2v_prms) -> gensim.models.KeyedVectors:
     return model.wv 
 
 
+# save the w2v model
 def Save_wv(word_vector): 
     ''' This function takes a keyed word vector and store is with a series of prompts'''
     kv_path = prompt_for_save_file(dir_path='word_vectors', f_format='.kv') 
@@ -318,6 +330,7 @@ def Save_wv(word_vector):
     return 
 
 
+# load in a w2v file
 def Load_wv(file_path=None) -> gensim.models.KeyedVectors: 
     ''' This function is called by main to prompt for a keyed vector file 
         which is loaded and returned ''' 

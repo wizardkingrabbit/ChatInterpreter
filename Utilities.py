@@ -15,7 +15,7 @@ short_line = '---------------------------------------------------------------'
 prompt_err_msg = 'invalid value entered, try again'
 
 
-
+# prompt for an int, does range check
 def prompt_for_int(message:str, min_v=None, max_v=None) -> int: # prompt for int with message, within min and max 
     ''' prompt for integer input with passed message and do all error checking,
         also check for min and max value range, they are inclusive'''
@@ -35,6 +35,7 @@ def prompt_for_int(message:str, min_v=None, max_v=None) -> int: # prompt for int
     return ans 
 
 
+# prompt for a float, does range check
 def prompt_for_float(message:str, min_v=None, max_v=None) -> float: # prompt for a float with passed message between min and max 
     ''' prompt for float input with passed message and do all error checking,
         also check for min and max value range, they are inclusive'''
@@ -54,6 +55,7 @@ def prompt_for_float(message:str, min_v=None, max_v=None) -> float: # prompt for
     return ans 
 
 
+#prompt for a string, check if it is within options (e.g. entering y/n)
 def prompt_for_str(message:str, options={}) -> str: # prompt for a string, if there are options, check if within options
     ''' prompt for a string and check if it is in the options, if options not specified, if is returned directly''' 
     while(True): 

@@ -12,6 +12,7 @@ import copy
     
     
 if __name__ == '__main__': 
+    # prompt for the file user want to label
     while(True):
         file_path = input('Enter pickle file path (WITH .pkl, enter exit to exit): ') 
         
@@ -33,6 +34,7 @@ if __name__ == '__main__':
     labeled_list = list()
     N = len(clip_list)
     
+    # start labeling each clip in passed file
     for i in range(len(clip_list)): 
         clip = clip_list[i].copy()
         if not clip.is_valid(): 

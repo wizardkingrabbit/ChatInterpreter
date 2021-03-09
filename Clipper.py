@@ -15,6 +15,7 @@ import copy
     
 # ===================================== helper functions ============================================
     
+# turn a twitch chat data loaded form json file into desired data structures
 def Twitch_Comment_to_data(comments:list, chat_window=10, ignore_notices=True): 
     ''' takeis a twitch comment formatted dict, outputs tuple of four items
         first is speed, second is chat string data, third is time points of those chats, fourth is video id
@@ -44,6 +45,7 @@ def Twitch_Comment_to_data(comments:list, chat_window=10, ignore_notices=True):
     return (speed,chats,x,video_id)
 
 
+# make clips from passed chat (output of Twitch_comment_to_data) using chat speed
 def Clip_from_Chat(speed, chats, time_points, video_id, min_len=5, threshold = 100): 
     ''' takes chat speed and string numpy array, turn into a list of clip class objects 
         it will not clip if clip chat is less then min_len in length, or below threshold% of average speed'''
