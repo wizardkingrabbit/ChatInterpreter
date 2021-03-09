@@ -1,8 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# this module defines tokenizing tools for us to use in leaner modules. 
-# typically tokanizing take a long string, returns a collection of tokens
-# thus any processing to get the long string should be done outside the tokenizing functions
+
+'''
+this module defines tokenizing tools for us to use in leaner modules. 
+typically tokanizing take a long string, returns a collection of tokens
+thus any processing to get the long string should be done outside the tokenizing functions
+'''
 
 import os 
 import numpy as np 
@@ -15,14 +18,17 @@ nltk_stop_words = set(stopwords.words('english'))
 
 # =============================== small methods/tools ==========================================================================
 
+# filter function for List_to_BOW
 def Default_word_filter(word:str) -> bool: 
     ''' by default, every word is counted'''
     return True 
 
+# modifier function for List_to_BOW
 def Default_word_modifier(word:str) -> str: 
     ''' by default, words are not modified'''
     return word 
 
+# converts a bag of words to a string for printing
 def BOW_to_str(bow:dict, freq_order=True, top_k=-1, indent='') -> str: 
     ''' This method turns a bow into user-friendly string for printing 
         printing order can be by frequency, or by a-b-c if by freq is false 
@@ -94,6 +100,7 @@ def Default_tokenizer(long_string:str, stopwords={}, min_len=1) -> list:
 
 #--------------------- Embedding tokenizer -------------------------------------------
 embd_stop_words = set(nltk_stop_words) 
+
 # modify word to account for word variations
 def Embedding_word_modifier(word:str, stop_words = embd_stop_words) -> str: 
     ''' Takes a word, check for varies conditions, make modifications, return result, None if in stop words''' 
@@ -211,6 +218,7 @@ def Embedding_tokenize(sentence:str, word_filter=Embedding_word_modifier, case_s
 
 '''================================ methods for processing list of tokens into BOW (sets, dicts, etc) ============================================='''
 
+# converts list of tokens to bag of words
 def List_to_bow(token_list:list, filter_func=Default_word_filter, modifier_func=Default_word_modifier, n_gram=1, connector=''): 
     ''' takes a list of tokens, make them into a bag of words based on some conditions 
         n grams will be conted, default is 1, they will be connected with connector string specified

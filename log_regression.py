@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# modules used
 import nltk 
 from nltk import word_tokenize
 import simplejson as json
@@ -24,6 +25,8 @@ from Data_converter import *
 from random import shuffle
 from nltk.corpus import stopwords
 
+# used by word purification process
+# nltk.download('stopwords') is needed
 import enchant
 global_dict = enchant.Dict("en_US")
 global_slang = set({"F", "???", "!!!", "!?", "pog", "nice", "noice", "haha", "lol", "lul", "lmao", "yes", "noo", "no", "yeah", "ree", "oof", "pogu", "xd", "ez", "money", "GG", "gg"})
@@ -32,7 +35,6 @@ nltk_stop_words = set(stopwords.words('english'))
 import warnings 
 warnings.filterwarnings(action='ignore')
 
-# nltk.download('stopwords') is needed
 # the following 2 functions are from HW1, with some modification.
 def logistic_classification(X, Y, classifier = None):
 	msg_line = ""
@@ -103,10 +105,28 @@ def most_significant_terms(classifier, vectorizer, K):
 		count += 1
 	return(topK_pos_weights, topK_neg_weights, topK_pos_terms, topK_neg_terms)
 
+# train log regression model with the data provided
+def train_log_regression(X, Y):
+	classifier = linear_model.LogisticRegression(penalty = 'l2', tol = 0.3, solver = "sag", max_iter = 10)
+	classifier.fit(X, Y)
+	return classifier
+
+# get validation error rate and default error rate of a model with the data provided
+def validate(classifier, X, Y):
+	accuracy = classifier.score(X, Y)
+	default_counter = 0
+	for i in Y:
+		if (i == 0):
+			default_counter += 1
+	default_accuracy = default_counter / len(Y)
+	return accuracy, default_accuracy
+
 # directly convert a list of long strings into a one-hot vector
 # it does both tokenization and vectorization
 # it should returns an 2-D array
 # X index the clip, Y index the token
+# However, since countVectorizer gives a better result (it does a better job tokenizing stuff)
+# this function is not used
 def to_ohv(text_list, stop_words = [], min_len = 2):
 	token_set = set()
 	for text in text_list:
@@ -147,12 +167,8 @@ def my_translator(target_word, stop_words = nltk_stop_words):
 		pass
 	if result == None:
 		result =  target_word
-#	elif result in stop_words:
-#		# if the result in in stop_words, we should not bother returning it
-#		pass
 	else:
 		result =  result
-#	return result
 	# last step : remove redundant consequtive words
 	real_result = []
 	last_letter = None
@@ -185,6 +201,7 @@ def my_translator_simple(target_word, stop_words = nltk_stop_words):
 		result = target_word
 	return result
         
+# utility function, you give a path to it and it add all .pkl file under that path to original set
 # please be sure that you give it a valid path when using it
 def add_filepath_to_set(the_path:str, is_file:bool, original_set):
     if (is_file):
@@ -196,7 +213,7 @@ def add_filepath_to_set(the_path:str, is_file:bool, original_set):
     return original_set
 
 # interpret a pkl file and extract its data into three lists
-def add_clipdata_to_set(clip_list, text_list, y_list, pkl_path, do_convert = 0, filter_stopword = True, show_debug = True):
+def add_clipdata_to_set(clip_list, text_list, y_list, pkl_path, do_convert = 0, filter_stopword = True, show_debug = False):
 	the_file = open(pkl_path, 'rb')
 	the_pkl = pickle.load(the_file)
 	for clip in the_pkl:
@@ -245,7 +262,7 @@ def randomize_data(clip_list, text_list, y_list):
 	return new_clip, new_text, new_y
 
 # this function iteratively run the main to find the best param
-def best_param(ngram, panelty, dual, tol, C, fit_intercept, solver, max_iter, num_iter = 10, test_ratio = 0.2, test_on = ["labeled_clip_data/Teo", "labeled_clip_data/wardell", "labeled_clip_data/T90"]):
+def best_param(ngram, panelty, dual, tol, C, fit_intercept, solver, max_iter, num_iter = 10, test_ratio = 0.2, test_on = ["labeled_clip_data/Teo"]):
 	va_err_list = []
 	#define training set
 	filepath = []
@@ -274,117 +291,67 @@ def best_param(ngram, panelty, dual, tol, C, fit_intercept, solver, max_iter, nu
 		num_iter -= 1
 	return np.average(va_err_list)
 
-def sudo_main(ask_save = True, ask_test = True, if_debug = True, consistent_shuffle = True): 
-    # main function, a sequence of supportive methods defined above 
-    # see specifications in learner_output.txt \
-    # one good practice is to keep indent within a function no more than 3
-    # if more loop like structures are needed, another defined method is recommended
-
-    #define training set
-    text = []
-    Y = []
-    all_clip = []
-    filepath = []
-    file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the training set, enter e to exit", {"e"})
-    while(file_or_folder != "e"):
-        filepath = add_filepath_to_set(file_or_folder, _type == "file", filepath)
-        file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the training set, enter e to exit", {"e"})
-    for filename in filepath:
-        all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, filename)
-    #define validation set
-    validation_ratio = prompt_for_float("What proportion of the training data would be used for validation?", 0, 1)
-    training_size = int(len(Y) * (1 - validation_ratio))
-    validation_size = len(Y) - training_size
-    # randomize the data
-	if consistent_shuffle:
-		shuffle(all_clip, Default_shuffle_func)
-		shuffle(text, Default_shuffle_func)
-		shuffle(Y, Default_shuffle_func)
-	else:
-    	all_clip, text, Y = randomize_data(all_clip, text, Y)
-    # train the model
-    classifier, t_err, v_err, t_msg, v_msg = main(text, Y, training_size, validation_size)
-    if if_debug:
-        print(t_msg)
-        print(v_msg)
-    #save the mislabeled
-    if (ask_save and prompt_for_str("Do you want to save the mislabeled clips? (y/n) ") == "y"):
-        if not os.path.isdir("/mislabeled"):
-            os.mkdir("/mislabeled")
-        file_prefix = prompt_for_str("Please name the prefix of saved files: ")
-        # making mislabeled file for training errors
-        err_list = list()
-        for err_id in t_err:
-            err_list.append(all_clip[err_id])
-        new_file_path = 'mislabeled/' + file_prefix + '_mislabeled_train.pkl' 
-        with open(new_file_path, 'wb') as f: 
-            pickle.dump(err_list, f)
-        # making mislabeled file for validation errors
-        err_list = list()
-        for err_id in v_err:
-            err_list.append(all_clip[err_id + training_size])
-        new_file_path = 'mislabeled/' + file_prefix + '_mislabeled_validation.pkl' 
-        with open(new_file_path, 'wb') as f: 
-            pickle.dump(err_list, f)
-    # test the classifier
-    training_size = len(Y)
-    while (ask_test and input("Do you want to test this classifier on any unlabled clip data? (y/n)") == "y"):
-        all_clip = []
-        training_size = len(Y)
-        file_path = prompt_for_file("which file you want to do test on? ")
-        if_answer = input("Is this file labeled? (y/n)") == "y"
-        all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, file_path)
-        classifier, t_err, v_err, t_msg, v_msg = main(text, Y, training_size, len(Y) - training_size, if_answer)
-        if if_answer:
-            print(v_msg)
-        else:
-            counter = 0
-            while(counter < len(all_clip)):
-                all_clip[counter].labeled = v_msg[counter]
-                counter += 1
-            file_path = prompt_for_save_file(dir_path='model_labeled_result', f_format='.pkl')
-            with open(file_path, 'wb') as f: 
-                pickle.dump(all_clip, f)
-    return classifier.score(text[:training_size], Y[:training_size]), classifier.score(text[training_size:], Y[training_size:])
-
 # main
-def main(the_text = None, the_y = None, t_size = None, v_size = None, test_has_answer = True, always_default = False, tfidf = True):
-	if (the_text == None):
-		sudo_main()
-		return
+# you do not need to run sudo main if you already have proper input data
+def main():
+	text = []
+	Y = []
+	all_clip = []
+	# define data set
+	filepath = []
+	file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the training set, enter e to exit", {"e"})
+	while(file_or_folder != "e"):
+		filepath = add_filepath_to_set(file_or_folder, _type == "file", filepath)
+		file_or_folder, _type = prompt_for_file_folder("enter a path to a file or a folder to add that to the training set, enter e to exit", {"e"})
+	for filename in filepath:
+		all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, filename)
+	#define validation set
+	validation_ratio = prompt_for_float("What proportion of the training data would be used for validation?", 0, 1)
+	training_size = int(len(Y) * (1 - validation_ratio))
+	validation_size = len(Y) - training_size
+	# randomize the data
+	all_clip, text, Y = randomize_data(all_clip, text, Y)
 	# define stop word
-	if (not always_default):
-		if_stop = prompt_for_str("Do you want to use default english stopwords or stopwords given by my author? (default/author)", {"default","author"})
-		if (if_stop == "default"):
-			special_stop_word = set(stopwords.words('english'))
-		if (if_stop == "author"):
-			special_stop_word = {"1", "2", "11", "111111", "gg", "gg gg", "LUL", "LOL"}
+	if_stop = prompt_for_str("Do you want to use default english stopwords or stopwords given by my author? (default/author)", {"default","author"})
+	if (if_stop == "default"):
+		special_stop_word = set(stopwords.words('english'))
+	if (if_stop == "author"):
+		special_stop_word = global_slang
 	# construct the vectorizer
-	if (special_stop_word == None and not tfidf):
-		vect = CountVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01, tokenizer = Embedding_tokenize)
-	elif (special_stop_word == None and tfidf):
-		vect = TfidfVectorizer(ngram_range = (1, 2), stop_words = 'english', min_df = 0.01, tokenizer = Embedding_tokenize)
-	elif tfidf:
-		vect = TfidfVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01,  tokenizer = Embedding_tokenize)
-	else:
-		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01,  tokenizer = Embedding_tokenize)
-	X = vect.fit_transform(the_text)
-	#X = to_ohv(the_text)
+	if_tfidf = prompt_for_str("Do you want to use tfidf on ohv construction? (yes/no)", {"yes","no"})
+	if (if_tfidf == "yes"):
+		vect = TfidfVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01, tokenizer = Embedding_tokenize)
+	if (if_tfidf == "no"):
+		vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01, tokenizer = Embedding_tokenize)
+	X = vect.fit_transform(text)
 	# make classifier
-	classifier, t_err, t_msg = logistic_classification(X[:t_size], the_y[:t_size])
-	if test_has_answer:
-		_c, v_err, v_msg = logistic_classification(X[t_size:], the_y[t_size:], classifier)
+	classifier = train_log_regression(X[:training_size], Y[:training_size])
+	accu, default_accu = validate(classifier, X[training_size:], Y[training_size:])
 	# look at result
-	if ((not always_default) and input("enter y to look at top 5 significant terms, enter other to quit") == "y"):
+	if (input("enter y to look at top 5 significant terms, enter other to quit") == "y"):
 		most_significant_terms(classifier, vect, 5)
-	# return the msg or the labeled clip list
-	# whem the validation/test data have answer
-	if test_has_answer:
-		return classifier, t_err, v_err, t_msg, v_msg
-	# when users do not have answer and want to get answer from the model
-	else:
-		v_msg = classifier.predict(X[t_size:])
-		return classifier, t_err, "not valid", t_msg, v_msg
+	print ("validation accuracy rate is -> " + str(accu))
+	print ("default validation accuracy rate is -> " + str(default_accu))
+	# test the classifier
+	training_size = len(Y)
+	while (input("Do you want to test this classifier on any unlabled clip data? (y/n)") == "y"):
+		training_size = len(Y)
+		file_path = prompt_for_file("which file you want to do test on? ")
+		all_clip, text, Y = add_clipdata_to_set(all_clip, text, Y, file_path)
+		if (if_tfidf == "yes"):
+			vect = TfidfVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01, tokenizer = Embedding_tokenize)
+		if (if_tfidf == "no"):
+			vect = CountVectorizer(ngram_range = (1, 2), stop_words = special_stop_word, min_df = 0.01, tokenizer = Embedding_tokenize)
+		X = vect.fit_transform(text)
+		classifier = train_log_regression(X[:training_size], Y[:training_size])
+		predictions = classifier.predict(X[training_size:])
+		counter = 0
+		while(counter < len(all_clip)):
+			all_clip[counter].labeled = predictions[counter]
+			counter += 1
+		file_path = prompt_for_save_file(dir_path='model_labeled_result', f_format='.pkl')
+		with open(file_path, 'wb') as f: 
+			pickle.dump(all_clip, f)
 
 if __name__ == "__main__":
     main()

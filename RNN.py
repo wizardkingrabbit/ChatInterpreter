@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+'''
+Following the structure of homework assignment 2 (https://pytorch.org/tutorials/intermediate/char_rnn_classification_tutorial.html),
+creates and trains an RNN on the clip data for a streamer.
+'''
 
 # import all you need
 from Utilities import * 
