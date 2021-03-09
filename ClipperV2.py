@@ -10,7 +10,8 @@ from Embedding import *
 from RNN import * 
 
 '''
-This module is not for utility use but just trials of clipping chronologically 
+This module implements an alternate way of clipping, since we found chat speed to be unreliable.
+It measures emotions within time intervals of the stream and clips based on how similar those emotions are.
 '''
 
 
