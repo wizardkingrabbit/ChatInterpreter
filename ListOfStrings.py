@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# creates a list of sentences where each sentence is a list of strings
-# each string is lowercase
+'''
+creates a list of sentences where each sentence is a list of lowercase strings
+**Not used as the function of this file was moved to Embedding.py**
+'''
 import numpy as np
 # import matplotlib.pyplot as plt
 import json
