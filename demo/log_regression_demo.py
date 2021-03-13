@@ -20,8 +20,6 @@ import os
 from Utilities import *
 from Tokenizer_kit import *
 from Embedding import *
-from Data_loader import *
-from Data_converter import *
 from random import shuffle
 from nltk.corpus import stopwords
 
