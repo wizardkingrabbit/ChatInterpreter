@@ -13,7 +13,7 @@ if __name__ == "__main__":
         clip_list = pickle.load(f)
     for clip in clip_list:
         count_a += 1
-        if (clip.labeled != 0):
+        if (clip.get_label_binary() != 0):
             count_b += 1
             print(clip.start_time_to_str())
     print(count_a)
