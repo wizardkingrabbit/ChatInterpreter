@@ -1,3 +1,5 @@
+## NOTE: demo iqynb notebook is inside the folder called "demo" for simpler importing of demo-needed modules 
+
 Clip.py
 > A data type we used to store clips. Contains timestamp, chats, and its category. 
 
@@ -55,7 +57,11 @@ foo.py
 > a module to test codes before practical use in one of the modules. 
 
 Folders: 
-  > These folders are mainly used to hold json or pkl files of clips and other data.
+  demo
+  > folder which holds demonstration notebook and needed data. 
+
+  > These folders are mainly used to hold json or pkl files of clips and other data. 
+
   Chatjsonfiles 
   > Folder to store json files downloaded from Twitch Downloader. 
 

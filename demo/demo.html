@@ -13077,14 +13077,14 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Twitch-Chat-Interpreter,-partial-demo">Twitch Chat Interpreter, partial demo<a class="anchor-link" href="#Twitch-Chat-Interpreter,-partial-demo">&#182;</a></h2><h3 id="members:">members:<a class="anchor-link" href="#members:">&#182;</a></h3><h5 id="Nate-Yeo,-42099639,-yeon@uci.edu">Nate Yeo, 42099639, yeon@uci.edu<a class="anchor-link" href="#Nate-Yeo,-42099639,-yeon@uci.edu">&#182;</a></h5><h5 id="Jingtian-Li,-46918353,-jingtil2@uci.edu">Jingtian Li, 46918353, jingtil2@uci.edu<a class="anchor-link" href="#Jingtian-Li,-46918353,-jingtil2@uci.edu">&#182;</a></h5><h5 id="Duo-Chen,-92789693,-duoc3@uci.edu">Duo Chen, 92789693, duoc3@uci.edu<a class="anchor-link" href="#Duo-Chen,-92789693,-duoc3@uci.edu">&#182;</a></h5>
+<h2 id="Twitch-Chat-Interpreter,-demo">Twitch Chat Interpreter, demo<a class="anchor-link" href="#Twitch-Chat-Interpreter,-demo">&#182;</a></h2><h3 id="members:">members:<a class="anchor-link" href="#members:">&#182;</a></h3><h5 id="Nate-Yeo,-42099639,-yeon@uci.edu">Nate Yeo, 42099639, yeon@uci.edu<a class="anchor-link" href="#Nate-Yeo,-42099639,-yeon@uci.edu">&#182;</a></h5><h5 id="Jingtian-Li,-46918353,-jingtil2@uci.edu">Jingtian Li, 46918353, jingtil2@uci.edu<a class="anchor-link" href="#Jingtian-Li,-46918353,-jingtil2@uci.edu">&#182;</a></h5><h5 id="Duo-Chen,-92789693,-duoc3@uci.edu">Duo Chen, 92789693, duoc3@uci.edu<a class="anchor-link" href="#Duo-Chen,-92789693,-duoc3@uci.edu">&#182;</a></h5>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is the demonstration for part of our twitch chat interpreter project. This demo will be a streamline of what we ahve accomplished. For time saving, the demonstrated part will only be what we feel worth showing. Outputs of parts not included are presented as screen snippets in the project report.</p>
+<p>This is the demonstration for part of our twitch chat interpreter project. This demo will be a streamline of what we have accomplished. For time saving, the demonstrated part will only be what we feel worth showing. Outputs of parts not included are presented as screen snippets in the project report.</p>
 
 </div>
 </div>
@@ -13095,7 +13095,7 @@ div#notebook {
 <h3 id="Project-Purpose-&amp;-First-part">Project Purpose &amp; First part<a class="anchor-link" href="#Project-Purpose-&amp;-First-part">&#182;</a></h3><p>We aim to make a system that can automically clip from a stream vod by using chat, thus saving editors' time in finding potential clips. Selected stream vods are downloaded by using TwitchDownloader (third party software), files are in the project folder named "chatjsonfiles".</p>
 <p>Our first approach was to gather stream clips based on chat speed. This is done using the Clipper.py module, whose terminal outputs are in report's screen snippets and whose files outputs are in the project folder "clip_data".</p>
 <p>We want to train a learner to distinguish between good/bad clips from a collection of clips. To do this, we used labeler to manually label those clips. Terminal outputs are in project report and file outputs are in project folder "labeled_clip_data".</p>
-<p>To numericalize string texts, we made a Embedding module by using gensim python package. We then trained it on the json files we have. Here is part of its results. NOTE: to run the cell for live demo of Embedding, you will need the gensim package, numpy, scipy and nltk package.</p>
+<p>To numericalize string texts, we made a Embedding module by using gensim python package. We then trained it on the json files we have. Here is part of its results. NOTE: to run the cell for live demo of Embedding (second next), you will need the gensim package, numpy, scipy and nltk package.</p>
 
 </div>
 </div>
@@ -13107,7 +13107,7 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># For this cell, you only need the python pickle package </span>
 <span class="c1"># This cell demonstrates three words we have chosen to present their similar words and consine similarity </span>
-<span class="c1"># vector size is 300, thus we will not show vectors in this cell output</span>
+<span class="c1"># vector size is 300 (too big to show), thus we will not show vectors in this cell output</span>
 <span class="kn">import</span> <span class="nn">pickle</span> 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;data/EmbdDemo.pkl&#39;</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> 
     <span class="n">demo</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> 
@@ -13118,8 +13118,8 @@ div#notebook {
     <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">demo</span><span class="p">[</span><span class="n">word</span><span class="p">]:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt;&gt; [</span><span class="si">{w[0]}</span><span class="s2">]:[</span><span class="si">{w[1]}</span><span class="s2">]&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">()</span>
 
-<span class="c1"># Some not about those words: </span>
-<span class="c1"># lulw, omegalul, lmao, etc are variants of the word lol commonly used in Twitch </span>
+<span class="c1"># Somethings about those words: </span>
+<span class="c1"># lulw, omegalul, lmao, etc are variants of the word lol commonly used on Twitch </span>
 <span class="c1"># kekw is a Twitch emote, if you want to know what it looks like, google image &quot;kekw&quot; </span>
 <span class="c1"># pog is an emote on Twitch to express amazement </span>
 <span class="c1"># pog has variants such as pogu, pogcrew etc.</span>
@@ -13178,10 +13178,10 @@ For word [pog]
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># For this cell, you will need the gensim python package and many other packages specified above</span>
 <span class="c1"># we want to demonstrate the complete w2v model we have, including some functions in Embedding for better readibility </span>
 <span class="c1"># How to use the terminal UI is somewhat included in itself, feel free to play around with it. </span>
-<span class="c1"># If you want to save time in not installing gensim, just skip this model </span>
+<span class="c1"># If you want to save time in not installing gensim, just skip this cell </span>
 <span class="kn">import</span> <span class="nn">Embedding</span> 
 <span class="n">kv</span><span class="o">=</span><span class="n">Embedding</span><span class="o">.</span><span class="n">Load_wv</span><span class="p">(</span><span class="s1">&#39;data/teo.kv&#39;</span><span class="p">)</span> 
-<span class="n">Embedding</span><span class="o">.</span><span class="n">Check_trained_model</span><span class="p">(</span><span class="n">kv</span><span class="p">)</span>
+<span class="n">Embedding</span><span class="o">.</span><span class="n">Check_trained_model</span><span class="p">(</span><span class="n">kv</span><span class="p">)</span> 
 </pre></div>
 
     </div>
@@ -13215,27 +13215,22 @@ Do you want to see the vector? (y/n): n
 ---------------------------------------------------------------
 Vocabulary size is: [1804]
 Enter either one word to find most similar or two to find similarity, enter 0 to exit
-Enter here: lol haha
+Enter here: lol lmao
 ---------------------------------------------------------------
-[lol]:[haha] has similarity 0.9749072790145874
+[lol]:[lmao] has similarity 0.9641276597976685
 ---------------------------------------------------------------
 Vocabulary size is: [1804]
 Enter either one word to find most similar or two to find similarity, enter 0 to exit
-Enter here: pog
-How many similar words do you want to see?: 10
+Enter here: nice
+How many similar words do you want to see?: 5
 Do you want to see the vector? (y/n): n
 ---------------------------------------------------------------
-10 most similar words of [pog] are: 
-&gt;&gt;[pogu]: 0.9807208180427551 
-&gt;&gt;[pogcrew]: 0.9568219780921936 
-&gt;&gt;[katielpog]: 0.9555957317352295 
-&gt;&gt;[clutch]: 0.9483774900436401 
-&gt;&gt;[kreygasm]: 0.9365337491035461 
-&gt;&gt;[black]: 0.9348636865615845 
-&gt;&gt;[ice]: 0.932059645652771 
-&gt;&gt;[poggers]: 0.9283739924430847 
-&gt;&gt;[noice]: 0.9231411218643188 
-&gt;&gt;[pogchamp]: 0.9040677547454834 
+5 most similar words of [nice] are: 
+&gt;&gt;[lukas]: 0.951810896396637 
+&gt;&gt;[poggers]: 0.9405299425125122 
+&gt;&gt;[kreygasm]: 0.9384805560112 
+&gt;&gt;[ace]: 0.9324921369552612 
+&gt;&gt;[wow]: 0.927863359451294 
 
 ---------------------------------------------------------------
 Vocabulary size is: [1804]
@@ -13249,10 +13244,61 @@ Enter here: 0
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># This cell demonstrate some word purification processes done in LogReg </span>
+<span class="c1"># to run this cell, you need the python package &quot;enchant&quot; of spell checking </span>
+<span class="c1"># simple purification process does not remove repeating letters while heavy purification does. </span>
+<span class="c1"># for example, &quot;Hello&quot; would be changed to &quot;Helo&quot; by heavy purification.</span>
+<span class="c1"># simple purification process does not edit numbers, </span>
+<span class="c1"># while heavy purification returns you a special words if it receives a float number.</span>
+<span class="kn">import</span> <span class="nn">log_regression_demo</span>
+<span class="n">cmd</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;what do you want to test? 1 -&gt; simple purification; 2 -&gt; heavy purification; enter other to quit&quot;</span><span class="p">)</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">cmd</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]):</span>
+    <span class="n">be_converted</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;please enter the string you wish to convert: &quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">log_regression_demo</span><span class="o">.</span><span class="n">demo_convert</span><span class="p">(</span><span class="n">be_converted</span><span class="p">,</span> <span class="n">cmd</span><span class="p">))</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;what do you want to test? 1 -&gt; simple purification; 2 -&gt; heavy purification; enter other to quit&quot;</span><span class="p">)</span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>what do you want to test? 1 -&gt; simple purification; 2 -&gt; heavy purification; enter other to quit1
+please enter the string you wish to convert: niiiiiceeeee
+
+nice 
+what do you want to test? 1 -&gt; simple purification; 2 -&gt; heavy purification; enter other to quit2
+please enter the string you wish to convert: pooooog
+
+pog 
+what do you want to test? 1 -&gt; simple purification; 2 -&gt; heavy purification; enter other to quit0
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Second-part">Second part<a class="anchor-link" href="#Second-part">&#182;</a></h3><p>Models we have tried are LogReg, MLP, RNN, GRU. Because we implemented those python codules to train and test models in one go, we do not have enough time to re-write codes for this demonstration. But the typical outputs are included in project report.</p>
+<h3 id="Second-part">Second part<a class="anchor-link" href="#Second-part">&#182;</a></h3><p>Models we have tried are LogReg, MLP, RNN, GRU. Because we implemented those python modules to train AND test models in one go, we do not have enough time to re-write codes for this demonstration. But the typical outputs are included in project report.</p>
 <p>We found that learner models does not have significant increase compared to default accuracy, and that many of our clips made from chat speed are noisy in terms of chat content.</p>
 <p>This lead to the making of ClipperV2.py. In this approach, we identify clips by locating intervals of chats whose tokens have similar vector directions. Ideally, this should find clips where chats have homogeneous reactions.</p>
 <p>Because it was close to the end of the quarter, we did not make a terminal UI based python model. Thus running this py file will directly output terminal results. The ClipperV2 used in demo is different from the one in project, thus the only additional packages needed for this part should be nltk, numpy and scipy.</p>
@@ -13262,7 +13308,7 @@ Enter here: 0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">run</span> ClipperV2.py
@@ -13284,59 +13330,39 @@ Enter here: 0
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>processing data
 clipping vod
-clip for file [data/teo6.pkl]
-number of clips found: [54]
-Clip number [1] is: [0:7:34] -&gt; [0:8:50]
-Clip number [3] is: [0:19:34] -&gt; [0:20:32]
-Clip number [4] is: [0:20:37] -&gt; [0:21:35]
-Clip number [5] is: [0:23:52] -&gt; [0:24:50]
-Clip number [6] is: [0:30:4] -&gt; [0:31:2]
-Clip number [7] is: [0:38:31] -&gt; [0:40:2]
-Clip number [8] is: [0:43:31] -&gt; [0:44:29]
-Clip number [9] is: [0:45:13] -&gt; [0:46:11]
-Clip number [10] is: [0:48:34] -&gt; [0:50:5]
-Clip number [11] is: [0:52:43] -&gt; [0:54:17]
-Clip number [12] is: [0:57:19] -&gt; [0:58:17]
-Clip number [13] is: [1:10:22] -&gt; [1:11:29]
-Clip number [14] is: [1:14:1] -&gt; [1:15:23]
-Clip number [15] is: [1:16:1] -&gt; [1:17:38]
-Clip number [16] is: [1:21:46] -&gt; [1:23:8]
-Clip number [17] is: [1:23:43] -&gt; [1:24:41]
-Clip number [18] is: [1:26:10] -&gt; [1:27:26]
-Clip number [19] is: [1:29:34] -&gt; [1:30:41]
-Clip number [20] is: [1:37:25] -&gt; [1:39:29]
-Clip number [21] is: [1:43:37] -&gt; [1:45:2]
-Clip number [22] is: [1:48:4] -&gt; [1:50:23]
-Clip number [23] is: [2:0:28] -&gt; [2:2:20]
-Clip number [24] is: [2:5:55] -&gt; [2:6:53]
-Clip number [25] is: [2:17:22] -&gt; [2:18:20]
-Clip number [27] is: [2:34:52] -&gt; [2:36:2]
-Clip number [28] is: [2:36:40] -&gt; [2:37:38]
-Clip number [29] is: [2:38:1] -&gt; [2:38:59]
-Clip number [31] is: [2:50:13] -&gt; [2:52:23]
-Clip number [32] is: [2:53:46] -&gt; [2:54:44]
-Clip number [33] is: [2:56:4] -&gt; [2:57:2]
-Clip number [34] is: [2:57:22] -&gt; [2:58:20]
-Clip number [35] is: [2:59:10] -&gt; [3:0:8]
-Clip number [36] is: [3:0:22] -&gt; [3:1:20]
-Clip number [37] is: [3:4:10] -&gt; [3:5:8]
-Clip number [38] is: [3:10:55] -&gt; [3:11:56]
-Clip number [39] is: [3:12:10] -&gt; [3:13:11]
-Clip number [40] is: [3:18:19] -&gt; [3:19:17]
-Clip number [41] is: [3:20:16] -&gt; [3:21:38]
-Clip number [42] is: [3:22:40] -&gt; [3:23:38]
-Clip number [43] is: [3:26:58] -&gt; [3:27:56]
-Clip number [44] is: [3:31:16] -&gt; [3:32:14]
-Clip number [45] is: [3:49:55] -&gt; [3:51:44]
-Clip number [46] is: [4:6:13] -&gt; [4:7:11]
-Clip number [47] is: [4:11:4] -&gt; [4:12:2]
-Clip number [48] is: [4:18:46] -&gt; [4:21:29]
-Clip number [49] is: [4:22:52] -&gt; [4:23:50]
-Clip number [50] is: [4:27:25] -&gt; [4:28:32]
-Clip number [51] is: [4:29:43] -&gt; [4:30:47]
-Clip number [53] is: [4:42:1] -&gt; [4:43:35]
-total time to edit is [1:0:34]
-original vod duration is [4:48:42]
+clip for file [data/teo7.pkl]
+number of clips found: [29]
+Clip number [1] is: [0:3:19] -&gt; [0:5:14]
+Clip number [2] is: [0:7:34] -&gt; [0:8:56]
+Clip number [3] is: [0:13:25] -&gt; [0:14:29]
+Clip number [4] is: [0:15:10] -&gt; [0:16:8]
+Clip number [5] is: [0:16:34] -&gt; [0:17:32]
+Clip number [6] is: [0:23:43] -&gt; [0:24:41]
+Clip number [7] is: [0:25:40] -&gt; [0:27:38]
+Clip number [8] is: [0:34:55] -&gt; [0:36:2]
+Clip number [9] is: [0:42:31] -&gt; [0:43:29]
+Clip number [10] is: [0:56:52] -&gt; [0:57:50]
+Clip number [11] is: [1:31:52] -&gt; [1:32:59]
+Clip number [12] is: [1:39:4] -&gt; [1:40:2]
+Clip number [13] is: [1:48:40] -&gt; [1:49:38]
+Clip number [14] is: [1:49:58] -&gt; [1:50:56]
+Clip number [15] is: [1:51:19] -&gt; [1:52:59]
+Clip number [16] is: [1:54:4] -&gt; [1:55:2]
+Clip number [17] is: [1:56:25] -&gt; [1:57:23]
+Clip number [18] is: [2:9:1] -&gt; [2:10:14]
+Clip number [19] is: [3:21:52] -&gt; [3:22:50]
+Clip number [20] is: [3:29:43] -&gt; [3:30:41]
+Clip number [21] is: [3:32:28] -&gt; [3:33:26]
+Clip number [22] is: [3:36:55] -&gt; [3:37:53]
+Clip number [23] is: [3:54:52] -&gt; [3:55:50]
+Clip number [24] is: [4:32:31] -&gt; [4:33:32]
+Clip number [25] is: [4:37:37] -&gt; [4:38:35]
+Clip number [26] is: [5:3:22] -&gt; [5:4:20]
+Clip number [27] is: [5:4:31] -&gt; [5:5:47]
+Clip number [28] is: [5:26:55] -&gt; [5:27:53]
+Clip number [29] is: [5:51:25] -&gt; [5:52:59]
+total time to edit is [0:32:41]
+original vod duration is [5:53:9]
 </pre>
 </div>
 </div>
@@ -13348,8 +13374,9 @@ original vod duration is [4:48:42]
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This brings back the project purpose, which is pre-processing stream vods into collection of clips. As you can see, a vod of almost 5 hours can be shrunken down to 1 hour (whose content we have checked) in unsupervised clipping. Hence, this approach is viable.</p>
-<p>The vod URL is <a href="https://www.twitch.tv/videos/866021945">https://www.twitch.tv/videos/866021945</a> However, Twitch delete out-dated vod to save storage. This vod is likely deleted by the time you are reading this.</p>
+<p>This brings back the project purpose, which is pre-processing stream vods into collection of clips. As you can see, a vod of 5 hours can be shrunken down to less than 1 hour (whose content we have checked) in unsupervised clipping. Hence, this approach is viable.</p>
+<p>The vod URL is <a href="https://www.twitch.tv/videos/945481267">https://www.twitch.tv/videos/945481267</a> However, Twitch delete out-dated vod to save storage. This vod is likely deleted by the time you are reading this.</p>
+<p>In this vod, some clips (such as the ones in the beginning) are filled with greetings. Some other (such as clip number 19) is watch worthy. But the major improvement is that these are short and less noisy segments.</p>
 
 </div>
 </div>

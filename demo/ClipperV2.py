@@ -11,7 +11,7 @@ It measures emotions within time intervals of the stream and clips based on how 
 '''
 
 
-vod_chrono = 'data/teo6.pkl' 
+vod_chrono = 'data/teo7.pkl' 
 kv_path = 'data/teo.pkl' 
 
 
