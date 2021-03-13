@@ -2,10 +2,8 @@ import pickle
 import numpy as np 
 import os 
 import scipy 
-from Data_converter import * 
-from Data_loader import * 
 from Utilities import * 
-from Embedding import * 
+from Tokenizer_kit import * 
 
 '''
 This module implements an alternate way of clipping, since we found chat speed to be unreliable.
@@ -13,25 +11,47 @@ It measures emotions within time intervals of the stream and clips based on how 
 '''
 
 
-vod_chrono = 'teo_chrono/teo6.pkl' 
-kv_path = 'word_vectors/teo.kv' 
+vod_chrono = 'data/teo6.pkl' 
+kv_path = 'data/teo.pkl' 
+
+
+# compute magnitude of numpy vector 
+def Magnitude_of(vector:np.ndarray): 
+    assert len(vector.shape)==1, "passed a multi-dimention vector"
+    return np.sqrt(vector.dot(vector)) 
+
+
+# Normalize a vector to be magnitude of 1 
+def Normalize_vector(vector:np.ndarray) -> np.ndarray: 
+    ''' This function normalize the passed vector to have magnitude of 1''' 
+    return vector/(Magnitude_of(vector)+np.finfo(dtype=np.float32).eps)
+
+
+# Turns a list of tokens into a normalized vector 
+def Token_list_to_vec(token_list:list, kv:dict) -> np.ndarray: 
+    to_return = np.zeros(300, dtype=np.float32)
+    for token in token_list: 
+        to_return = to_return + kv.get(token,np.zeros(300,dtype=np.float32))
+    to_return = Normalize_vector(to_return) 
+    return to_return
 
 
 
 with open(vod_chrono,'rb') as f: 
     data = pickle.load(f) 
 
+with open(kv_path, 'rb') as f: 
+    kv = pickle.load(f) 
+
 interval = data[1][0]-data[0][0] 
 vod_duration = data[-1][0]-data[0][0]
 vod_intervals = np.zeros(len(data), dtype=np.float32) 
-kv = Load_wv(kv_path)
 print(f"processing data") 
 chats = [i[1] for i in data] 
 for i in range(len(chats)): 
     c = chats[i].split(os.linesep)[1:] 
     if len(c)<6: 
         vod_intervals[i]=0 
-        Print_progress(i,len(chats),message='marked 0') 
         i+=1
         continue 
     c = [Token_list_to_vec(Embedding_tokenize(s), kv) for s in c] 
@@ -42,10 +62,8 @@ for i in range(len(chats)):
     c = np.mean(np.linalg.norm(c,axis=1)) 
     if c>0.5: 
         vod_intervals[i]=0 
-        Print_progress(i,len(chats),message='marked 0') 
     else: 
         vod_intervals[i]=1
-        Print_progress(i,len(chats),message='marked 1') 
     i+=1
     
 mask = np.ones(2*interval,dtype=np.float32) 
@@ -73,7 +91,6 @@ while ind<vod_intervals.shape[0]:
         end=ind*interval 
         clip_list.append((int(start),int(end))) 
     
-    Print_progress(ind,vod_intervals.shape[0])
     ind+=1 
 
 results=list() 
